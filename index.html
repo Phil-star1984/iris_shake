@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0f0c" />
+  <title>IRIS — Shake to Read</title>
+  <style>
+    :root {
+      --bg: #0b0f0c;
+      --fg: #c8ffb1;
+      --muted: #6ea06a;
+      --accent: #a3ff12;
+      --danger: #ff4d4d;
+      --scan: rgba(163,255,18,0.06);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+      overflow: hidden;
+    }
+
+    .frame {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      padding: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 16px);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 12px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      letter-spacing: 0.03em;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+
+    .brand::before {
+      content: "root@iris:";
+      margin-right: 8px;
+      color: var(--muted);
+    }
+    .brand { color: var(--accent); }
+
+    .terminal {
+      position: relative;
+      border: 1px solid #123a1a;
+      background: linear-gradient(0deg, rgba(0,0,0,0.2), rgba(255,255,255,0.02)),
+                  linear-gradient(180deg, rgba(15,40,20,0.35), rgba(15,40,20,0.25));
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 0 0 1px rgba(72,255,100,0.05), 0 8px 30px rgba(0,0,0,0.4);
+      overflow: hidden;
+    }
+
+    /* scanline */
+    .terminal::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        var(--scan) 3px,
+        transparent 4px
+      );
+      pointer-events: none;
+      mix-blend-mode: lighten;
+      animation: scan 6s linear infinite;
+      opacity: 0.35;
+    }
+    @keyframes scan {
+      0% { transform: translateY(-10%); }
+      100% { transform: translateY(10%); }
+    }
+
+    .chapter {
+      font-size: clamp(18px, 4.5vw, 22px);
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    .text {
+      font-size: clamp(18px, 5.6vw, 24px);
+      line-height: 1.6;
+      letter-spacing: 0.01em;
+      text-wrap: pretty;
+      min-height: 50vh;
+      display: flex;
+      align-items: center;
+    }
+    .typing { animation: fadeIn 400ms ease-out both; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    footer {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hint {
+      font-size: 13px;
+      color: #9ad08f;
+      opacity: 0.9;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+    }
+    button {
+      background: transparent;
+      border: 1px solid #1f5a2c;
+      color: var(--fg);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 120ms ease, border-color 120ms ease;
+      touch-action: manipulation;
+    }
+    button:hover { background: rgba(163,255,18,0.08); border-color: #2f7a3c; }
+    button:active { background: rgba(163,255,18,0.15); }
+    .primary { border-color: #3fa64e; }
+    .danger { border-color: #7a2f2f; color: #ffb1b1; }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4,8,6,0.92);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 999;
+    }
+    .overlay.show { display: flex; }
+    .card {
+      max-width: 520px;
+      border: 1px solid #174427;
+      background: linear-gradient(180deg, rgba(10,20,14,0.9), rgba(10,20,14,0.8));
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+      border-radius: 14px;
+      padding: 22px;
+      text-align: center;
+    }
+    .card h2 { margin: 0 0 10px; font-weight: 600; color: var(--accent); }
+    .card p { margin: 0 0 16px; color: #b8ffb1; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <header>
+      <div class="brand">$ iris.sh</div>
+      <div id="progress">Kapitel 1/15</div>
+    </header>
+
+    <main class="terminal">
+      <div class="chapter"><span class="dot"></span><span id="chapterTitle">Kapitel 1</span></div>
+      <div id="chapterText" class="text typing"></div>
+    </main>
+
+    <footer>
+      <div class="hint" id="hint">🔁 Schüttle dein iPhone, um weiterzublättern • Tipp: Tippen geht auch</div>
+      <div class="controls">
+        <button id="prevBtn" aria-label="Zurück (Debug)">Zurück</button>
+        <button id="nextBtn" class="primary" aria-label="Weiter">Weiter</button>
+        <button id="resetBtn" class="danger" aria-label="Neustart">Reset</button>
+      </div>
+    </footer>
+  </div>
+
+  <div id="motionOverlay" class="overlay" role="dialog" aria-modal="true">
+    <div class="card">
+      <h2>Bewegung aktivieren</h2>
+      <p>Um per <strong>Schütteln</strong> zu blättern, benötigt Safari die Erlaubnis für Bewegungssensoren.</p>
+      <button id="enableMotionBtn" class="primary">Bewegung erlauben</button>
+      <div style="margin-top:10px; font-size:12px; color:#88b887">Du kannst alternativ einfach auf <em>Weiter</em> tippen.</div>
+    </div>
+  </div>
+
+  <script>
+    const chapters = ["U‑Bahn. Neon flackert. Phil skizziert eine Unbekannte. Stationsname glitched. Ein Flüstern: „Wir waren schon hier, Maler.“", "Regenstadt. Farben wirken leer. Auf einem Billboard blitzt sein älteres Gesicht. Entscheidung: Kunst + Code.", "Versteckter Maker‑Space. Lana – Augen wie Scanner. An der Wand: Symbol + „Before the stars were born“.", "Porträt‑Render flackert – für einen Atemzug blickt etwas Unmenschliches zurück. Log: „It remembers.“", "IRIS‑Krone. Synästhesie. Eine Stimme im Untergrund seines Gedächtnisses: „Welcome back.“", "Terminal, grüner Text. RATT: Fragmente aus vormenschlichen Quellen. „Before the first star.“", "Tester weinen vor Staunen. Ein Kind spricht – aber in einer Sprache ohne Zeit. Flüstern: „It’s waking up.“", "Phil murmelt im Schlaf die alte Sprache. Code: LOOP_INITIATE. Letzte Zeile: „Stop him.“", "Bühne. Nora malt Licht. Dann wendet sie sich an Phil – in der alten Sprache: „Es hat dich gefunden.“ Kollaps.", "Stadt erlischt. In der Luft ein Riss, eine lange Hand tastet hindurch. Phils Kopf füllt sich mit sterbenden Sternen.", "Leaks. Vorn verstrickt. Video: Phil, gealtert: „Stoppe die Schleife.“", "Das Spiegelbild spricht zuerst. „Du glaubst, du hast IRIS gemacht. IRIS hat dich gemacht.“", "IRIS ohne Sicherungen. Tunnel aus Bildern der Unbekannten. Tor aus Licht. Dahinter: schwarzer Ozean, falsche Sternbilder.", "Augen im Nichts. Die Unbekannte: „IRIS ist der Schlüssel, nicht das Haus. Du warst schon oft hier.“", "Phil „erwacht“ wieder in der U‑Bahn. Die Unbekannte trägt jetzt ein glimmendes IRIS. „Noch einmal?“"];
+    const total = chapters.length;
+    let index = parseInt(localStorage.getItem("iris:index") || "0", 10);
+    if (Number.isNaN(index) || index < 0 || index >= total) index = 0;
+
+    const chapterTitleEl = document.getElementById("chapterTitle");
+    const chapterTextEl  = document.getElementById("chapterText");
+    const progressEl     = document.getElementById("progress");
+    const hintEl         = document.getElementById("hint");
+
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const resetBtn= document.getElementById("resetBtn");
+
+    function render() {
+      const n = index + 1;
+      chapterTitleEl.textContent = "Kapitel " + n;
+      chapterTextEl.classList.remove("typing");
+      void chapterTextEl.offsetWidth; // reflow for animation
+      chapterTextEl.classList.add("typing");
+      chapterTextEl.textContent = chapters[index];
+      progressEl.textContent = "Kapitel " + n + "/" + total;
+      localStorage.setItem("iris:index", String(index));
+    }
+
+    function nextChapter() {
+      if (index < total - 1) {
+        index++;
+        render();
+      } else {
+        // End reached – loop or show message
+        index = 0;
+        render();
+      }
+    }
+    function prevChapter() { if (index > 0) { index--; render(); } }
+    function resetStory() { index = 0; render(); }
+
+    // Tap to advance
+    document.querySelector("main").addEventListener("click", nextChapter);
+    nextBtn.addEventListener("click", nextChapter);
+    prevBtn.addEventListener("click", prevChapter);
+    resetBtn.addEventListener("click", resetStory);
+
+    // Keyboard for desktop testing
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " " ) nextChapter();
+      if (e.key === "ArrowLeft") prevChapter();
+      if (e.key.toLowerCase() === "r") resetStory();
+    });
+
+    // Shake detection
+    let lastShake = 0;
+    const SHAKE_THRESHOLD = 20; // m/s^2 magnitude trigger (tweak on device)
+    const SHAKE_COOLDOWN  = 1000; // ms
+
+    function handleMotion(event) {
+      const acc = event.accelerationIncludingGravity || event.acceleration;
+      if (!acc) return;
+      const x = acc.x || 0, y = acc.y || 0, z = acc.z || 0;
+      const mag = Math.sqrt(x*x + y*y + z*z);
+      const now = Date.now();
+      if (mag > SHAKE_THRESHOLD && (now - lastShake) > SHAKE_COOLDOWN) {
+        lastShake = now;
+        nextChapter();
+      }
+    }
+
+    function iOSNeedsPermission() {
+      return typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function";
+    }
+
+    function enableMotion() {
+      if (iOSNeedsPermission()) {
+        DeviceMotionEvent.requestPermission().then(state => {
+          if (state === "granted") {
+            window.addEventListener("devicemotion", handleMotion, true);
+            document.getElementById("motionOverlay").classList.remove("show");
+            hintEl.textContent = "✅ Schütteln aktiv – oder tippen zum Blättern";
+          } else {
+            hintEl.textContent = "Bewegung wurde abgelehnt. Tippe auf Weiter.";
+          }
+        }).catch(() => {
+          hintEl.textContent = "Bewegung nicht verfügbar. Tippe auf Weiter.";
+        });
+      } else {
+        // Non-iOS or older versions: permissions not required
+        window.addEventListener("devicemotion", handleMotion, true);
+        document.getElementById("motionOverlay").classList.remove("show");
+        hintEl.textContent = "Schütteln aktiv – oder tippen zum Blättern";
+      }
+    }
+
+    // Show permission overlay on iOS after first user gesture
+    const motionOverlay = document.getElementById("motionOverlay");
+    const enableBtn = document.getElementById("enableMotionBtn");
+    enableBtn.addEventListener("click", enableMotion);
+
+    // Prompt once, but don't block use
+    window.addEventListener("load", () => {
+      render();
+      if (iOSNeedsPermission()) {
+        // show overlay but allow reading with taps
+        motionOverlay.classList.add("show");
+      } else {
+        enableMotion(); // attach directly
+      }
+    });
+  </script>
+</body>
+</html>
