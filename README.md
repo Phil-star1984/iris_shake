@@ -1,19 +1,24 @@
-# IRIS — Shake to Read (Web App, v3)
+# IRIS — Shake to Read (Web App, v4)
 
-**Neu in v3**
-- 🔊 **Sound** beim Kapitelwechsel (kurzer Beep, über WebAudio; nach erstem Tap aktiviert)
-- 🎞️ **Card-Transitions** (rein/raus animiert)
-- ⌨️ **Typewriter-Effekt** (Buchstabe-für-Buchstabe; abschaltbar per CODE: TYPE_MODE)
-- Beibehaltener iOS-Permissions-Flow + Sensor-Debug (aus v2)
+**Fixes für Sound auf iOS**
+- Audio wird **bei erster Nutzer-Geste** (Tap/Click) initialisiert und gleich ein Test‑Blip gespielt
+- Beep lauter & markanter (Square‑Wave, Envelope)
+- Async `AudioContext.resume()` + Statusanzeige
+- Sound wird auch beim Klick auf „Bewegung erlauben“ aktiviert
+
+**Was bleibt:**
+- Shake‑Navigation mit iOS‑Permission Overlay
+- Animierte Kartenwechsel
+- Typewriter‑Effekt (char/word, Speed konfigurierbar)
+- Sensor‑Debug + Audio‑Status
+
+## Tipp, falls weiterhin kein Sound:
+- iPhone nicht im Stumm‑Schalter / Lautstärke hoch
+- Safari nutzen (nicht In‑App‑Browser), normaler Modus
+- Einmal **irgendeine Stelle tippen** (zum Freischalten), dann schütteln
 
 ## Lokal testen
-- `index.html` öffnen oder `python3 -m http.server 8080` starten
-- Im iPhone-Safari öffnen → Overlay: „Bewegung erlauben“ → beim ersten Tap wird auch **Audio** aktiviert
-- Weiter per **Schütteln**, **Tippen**, Buttons oder mit **Pfeiltasten** (Desktop)
-
-## Deployment (GitHub + Vercel)
-- Repo erstellen, Dateien pushen, auf Vercel als „Other“ deployen (Build Command leer, Output `/`) – HTTPS inklusive
-
-## Konfiguration
-- Shake-Empfindlichkeit: `SHAKE_THRESHOLD` (Default 18), Cooldown `SHAKE_COOLDOWN` (ms)
-- Typewriter: `TYPE_MODE` = `"char"` oder `"word"`, `TYPE_SPEED` (ms pro Schritt)
+```bash
+python3 -m http.server 8080
+# iPhone Safari öffnen → Overlay „Bewegung erlauben“ → tippen (Audio frei) → schütteln
+```

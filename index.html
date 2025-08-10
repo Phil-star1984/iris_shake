@@ -66,6 +66,7 @@
     .card-modal h2 { margin:0 0 10px; font-weight:600; color:var(--accent);}
     .card-modal p { margin:0 0 12px; color:#b8ffb1; }
     .status { font-size:12px; color:#a7dba0; opacity:.9; margin-top:6px; }
+    .audio { font-size:12px; color:#c5f0c1; margin-top:6px; }
   </style>
 </head>
 <body>
@@ -84,7 +85,7 @@
     </main>
 
     <footer>
-      <div class="hint" id="hint">🔁 Schüttle dein iPhone, um weiterzublättern • Tippen geht auch • 🔊 Sound aktiv nach erstem Tap</div>
+      <div class="hint" id="hint">🔁 Schüttle dein iPhone, um weiterzublättern • Tippen geht auch • 🔊 Erst tippen, dann Sound</div>
       <div class="controls">
         <button id="prevBtn" aria-label="Zurück (Debug)">Zurück</button>
         <button id="nextBtn" class="primary" aria-label="Weiter">Weiter</button>
@@ -101,7 +102,8 @@
       <p>Um per <strong>Schütteln</strong> zu blättern, benötigt Safari die Erlaubnis für Bewegungssensoren.</p>
       <button id="enableMotionBtn" class="primary">Bewegung erlauben</button>
       <div class="status" id="permStatus"></div>
-      <div style="margin-top:10px; font-size:12px; color:#88b887">Alternativ: Tippe auf <em>Weiter</em> (Sound wird dabei aktiviert).</div>
+      <div class="audio" id="audioStatus"></div>
+      <div style="margin-top:10px; font-size:12px; color:#88b887">Alternativ: Tippe auf <em>Weiter</em> (aktiviert auch Audio).</div>
       <div class="status" style="margin-top:8px;">
         <strong>Tipp (iOS):</strong> Einstellungen → Safari → „Bewegung & Ausrichtung Zugriff“ aktivieren.
       </div>
@@ -116,7 +118,7 @@
     if (Number.isNaN(index) || index < 0 || index >= total) index = 0;
 
     const TYPE_MODE = "char"; // "char" | "word"
-    const TYPE_SPEED = 22; // ms pro Zeichen/Wort
+    const TYPE_SPEED = 22; // ms
 
     const chapterTitleEl = document.getElementById("chapterTitle");
     const chapterTextEl  = document.getElementById("chapterText");
@@ -132,42 +134,59 @@
 
     let typingTimer = null;
     let isTyping = false;
+
+    /********* Audio *********/
     let audioCtx = null;
-
-    function unlockAudio() {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === "suspended") audioCtx.resume();
-      } catch (e) { /* ignore */ }
-    }
-
-    function playBeep() {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const ctx = audioCtx;
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type = "sine";
-        o.frequency.value = 660;
-        o.connect(g); g.connect(ctx.destination);
-        const now = ctx.currentTime;
-        g.gain.setValueAtTime(0.0001, now);
-        g.gain.exponentialRampToValueAtTime(0.08, now + 0.01);
-        g.gain.exponentialRampToValueAtTime(0.0001, now + 0.13);
-        o.start(now);
-        o.stop(now + 0.14);
-      } catch (e) {
-        // no audio available
-      }
-    }
-
+    let audioUnlocked = false;
     function logDebug(msg) {
       const time = new Date().toLocaleTimeString();
       debugEl.textContent = "[" + time + "] " + msg + "\n" + debugEl.textContent.slice(0, 2000);
     }
 
+    async function initAudio() {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") await audioCtx.resume();
+        audioUnlocked = (audioCtx.state === "running");
+        document.getElementById("audioStatus")?.replaceChildren(document.createTextNode("Audio: " + audioCtx.state));
+        logDebug("AudioContext: " + audioCtx.state);
+        // play a quiet blip to verify
+        await playBeep(0.15, 0.18);
+      } catch (e) {
+        logDebug("Audio init error: " + e);
+      }
+    }
+
+    async function playBeep(volume=0.22, duration=0.18) {
+      try {
+        if (!audioCtx) return;
+        if (audioCtx.state === "suspended") await audioCtx.resume();
+        const ctx = audioCtx;
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = "square"; // markanter
+        o.frequency.setValueAtTime(880, ctx.currentTime);
+        o.connect(g); g.connect(ctx.destination);
+        const now = ctx.currentTime;
+        const attack = 0.006, release = duration - attack;
+        g.gain.setValueAtTime(0.0001, now);
+        g.gain.exponentialRampToValueAtTime(Math.max(0.001, volume), now + attack);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+        o.start(now);
+        o.stop(now + duration + 0.01);
+      } catch (e) {
+        logDebug("Beep error: " + e);
+      }
+    }
+
+    function primeAudioOnFirstGesture() {
+      const once = async () => { await initAudio(); document.removeEventListener("touchstart", once); document.removeEventListener("click", once); };
+      document.addEventListener("touchstart", once, {passive:true, once:true});
+      document.addEventListener("click", once, {once:true});
+    }
+
+    /********* Typing *********/
     function typeText(el, text, done) {
-      // Cancel pending typing
       if (typingTimer) clearTimeout(typingTimer);
       isTyping = true;
       el.classList.add("caret");
@@ -200,19 +219,18 @@
       progressEl.textContent = "Kapitel " + n + "/" + total;
       localStorage.setItem("iris:index", String(index));
 
-      // Animate out, then update, animate in
       setCardAnimation("exit");
       setTimeout(() => {
         chapterTextEl.textContent = "";
         setCardAnimation("enter");
         typeText(chapterTextEl, chapters[index]);
-      }, 180);
+      }, 160);
     }
 
-    function nextChapter() {
-      unlockAudio();
-      playBeep();
-      if (isTyping) { // first tap finishes typing
+    async function nextChapter() {
+      if (!audioUnlocked) await initAudio();
+      await playBeep();
+      if (isTyping) {
         if (typingTimer) clearTimeout(typingTimer);
         chapterTextEl.textContent = chapters[index];
         isTyping = false;
@@ -222,8 +240,9 @@
       index = (index + 1) % total;
       render();
     }
-    function prevChapter() {
-      unlockAudio();
+    async function prevChapter() {
+      if (!audioUnlocked) await initAudio();
+      await playBeep(0.16, 0.12);
       if (isTyping) {
         if (typingTimer) clearTimeout(typingTimer);
         chapterTextEl.textContent = chapters[index];
@@ -234,16 +253,13 @@
       index = (index - 1 + total) % total;
       render();
     }
-    function resetStory() {
-      unlockAudio();
-      index = 0; render();
-    }
+    function resetStory() { index = 0; render(); }
 
     document.querySelector("main").addEventListener("click", nextChapter);
     nextBtn.addEventListener("click", nextChapter);
     prevBtn.addEventListener("click", prevChapter);
     resetBtn.addEventListener("click", resetStory);
-    soundBtn.addEventListener("click", () => { unlockAudio(); playBeep(); });
+    soundBtn.addEventListener("click", initAudio);
 
     window.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight" || e.key === " " ) nextChapter();
@@ -288,9 +304,10 @@
     const motionOverlay = document.getElementById("motionOverlay");
     const enableBtn = document.getElementById("enableMotionBtn");
     const permStatus = document.getElementById("permStatus");
+    const audioStatus = document.getElementById("audioStatus");
 
     async function enableMotion() {
-      unlockAudio(); // first user gesture also primes audio
+      await initAudio(); // user gesture -> unlock audio
       try {
         if (iOSNeedsPermission()) {
           permStatus.textContent = "Frage Berechtigung an…";
@@ -316,6 +333,7 @@
 
     document.getElementById("sensorBtn").addEventListener("click", () => {
       const s = [
+        "Audio: " + (audioCtx ? audioCtx.state : "uninit"),
         "DeviceMotionEvent: " + ("DeviceMotionEvent" in window),
         "requestPermission: " + (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function"),
         "gotMotionEvent: " + gotMotionEvent,
@@ -329,6 +347,8 @@
     enableBtn.addEventListener("click", enableMotion);
 
     window.addEventListener("load", () => {
+      // prime audio on first user gesture anywhere
+      primeAudioOnFirstGesture();
       render();
       if (iOSNeedsPermission()) {
         motionOverlay.classList.add("show");
