@@ -1,70 +1,85 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#000000" />
-  <title>IRIS — Shake to Read (CLI)</title>
-  <style>
-    :root{
-      --bg:#000;             /* pures Schwarz */
-      --fg:#00ff66;          /* leuchtendes Terminal-Grün */
-      --fg-dim:#00cc52;      /* gedimmt */
-      --accent:#00ff66;
-      --border:#005e2f;
-      --glow:0 0 10px rgba(0,255,102,.25);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;background:var(--bg);color:var(--fg);
-      font-family:"DejaVu Sans Mono","Ubuntu Mono","Liberation Mono","SFMono-Regular",Menlo,Monaco,Consolas,"Courier New",monospace;
-      -webkit-font-smoothing:antialiased; text-shadow:var(--glow);
-      line-height:1.6; overflow:hidden;
-    }
-    .frame{height:100%;display:grid;grid-template-rows:auto 1fr auto;gap:12px;
-      padding:calc(env(safe-area-inset-top)+12px) 14px calc(env(safe-area-inset-bottom)+14px)}
-    header{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--fg-dim)}
-    .brand::before{content:"root@iris:~$ ";color:var(--fg-dim)}
-    .terminal{
-      border:1px solid var(--border);border-radius:10px;
-      padding:18px;display:grid;grid-template-rows:auto 1fr auto;gap:10px; background:#000;
-      box-shadow:0 0 0 1px rgba(0,255,102,.05);
-    }
-    .chapter-row{display:flex;gap:8px;align-items:center;color:var(--fg-dim)}
-    .led{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent)}
-    .chapter{font-size:clamp(18px,4.5vw,22px)}
-    .card{min-height:52vh;display:flex;align-items:center}
-    .text{font-size:clamp(18px,5.6vw,24px)}
-    .caret::after{content:"▌";margin-left:2px;animation:blink 1s steps(1,end) infinite}
-    @keyframes blink{50%{opacity:0}}
-    .enter{animation:enter .4s cubic-bezier(.2,.8,.16,1) both}
-    .exit{animation:exit .25s cubic-bezier(.55,.08,.68,.53) both}
-    @keyframes enter{from{opacity:0;transform:translateY(10vh)}to{opacity:1;transform:translateY(0)}}
-    @keyframes exit{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-6vh)}}
-    footer{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px}
-    .hint{font-size:12.5px;color:var(--fg-dim)}
-    .controls{display:flex;gap:8px;flex-wrap:wrap}
-    button{
-      background:#000;border:1px solid var(--border);color:var(--fg);
-      padding:10px 14px;border-radius:8px;font-size:14px;cursor:pointer;touch-action:manipulation;
-      box-shadow:var(--glow)
-    }
-    button:hover{border-color:#00994d}
-    .primary{border-color:#00cc66}
-    .danger{border-color:#663333;color:#ffb3b3;text-shadow:none}
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;padding:24px;z-index:999}
-    .overlay.show{display:flex}
-    .card-modal{max-width:520px;background:#000;border:1px solid var(--border);border-radius:12px;padding:22px;text-align:center;box-shadow:var(--glow)}
-    .card-modal h2{margin:0 0 10px}
-    .status{font-size:12px;color:var(--fg-dim);margin-top:6px}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#000000" />
+<title>IRIS — Shake to Read (CLI)</title>
+<style>
+  :root{
+    --bg:#000;               /* pures Schwarz */
+    --fg:#00ff66;            /* klassisches CLI-Grün */
+    --fg-dim:#00cc52;        /* gedimmt */
+    --border:#005e2f;
+    --glow:0 0 10px rgba(0,255,102,.25);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font-family:"DejaVu Sans Mono","Ubuntu Mono","Liberation Mono","SFMono-Regular",Menlo,Monaco,Consolas,"Courier New",monospace;
+    -webkit-font-smoothing:antialiased; text-shadow:var(--glow);
+    line-height:1.65; overflow:hidden;
+  }
+  .frame{height:100%;display:grid;grid-template-rows:auto 1fr auto;gap:12px;
+    padding:calc(env(safe-area-inset-top)+12px) 14px calc(env(safe-area-inset-bottom)+14px)}
+  header{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--fg-dim)}
+  .brand::before{content:"root@iris:~$ ";color:var(--fg-dim)}
+  .terminal{
+    border:1px solid var(--border);border-radius:10px;background:#000;
+    padding:18px;display:grid;grid-template-rows:auto 1fr auto;gap:10px;box-shadow:0 0 0 1px rgba(0,255,102,.05);
+    transition:filter .22s ease, transform .22s ease;
+  }
+  .terminal.shock{filter:brightness(1.18) contrast(1.18) saturate(1.15); transform:scale(1.01)}
+  .chapter-row{display:flex;gap:8px;align-items:center;color:var(--fg-dim)}
+  .led{width:8px;height:8px;border-radius:50%;background:var(--fg);box-shadow:0 0 6px var(--fg)}
+  .chapter{font-size:clamp(18px,4.5vw,22px)}
+  .card{min-height:52vh;display:flex;align-items:center}
+  .text{font-size:clamp(18px,5.2vw,24px)}
+  .caret::after{content:"▌";margin-left:2px;animation:blink 1s steps(1,end) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .enter{animation:enter .44s cubic-bezier(.2,.8,.16,1) both}
+  .exit{animation:exit .26s cubic-bezier(.55,.08,.68,.53) both}
+  @keyframes enter{from{opacity:0;transform:translateY(10vh)}to{opacity:1;transform:translateY(0)}}
+  @keyframes exit{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-7vh)}}
+
+  footer{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px}
+  .hint{font-size:12.5px;color:var(--fg-dim)}
+  .controls{display:flex;gap:8px;flex-wrap:wrap}
+  button{
+    background:#000;border:1px solid var(--border);color:var(--fg);
+    padding:10px 14px;border-radius:8px;font-size:14px;cursor:pointer;touch-action:manipulation;box-shadow:var(--glow)
+  }
+  button:hover{border-color:#00994d}
+  .primary{border-color:#00cc66}
+  .danger{border-color:#663333;color:#ffb3b3;text-shadow:none}
+
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;padding:24px;z-index:999}
+  .overlay.show{display:flex}
+  .card-modal{max-width:520px;background:#000;border:1px solid var(--border);border-radius:12px;padding:22px;text-align:center;box-shadow:var(--glow)}
+  .card-modal h2{margin:0 0 10px}
+  .status{font-size:12px;color:var(--fg-dim);margin-top:6px}
+
+  /* Starker visueller Effekt: Aperture-Flash + Scanlines + kurzer Shake */
+  .fx{position:fixed;inset:0;pointer-events:none;opacity:0;z-index:998}
+  .fx.show{animation:flash 480ms ease-out}
+  @keyframes flash{
+    0%{opacity:.0}
+    8%{opacity:.95; background:
+        radial-gradient(circle at 50% 50%, rgba(0,255,102,.35) 0%, rgba(0,255,102,.12) 20%, transparent 45%),
+        repeating-linear-gradient(to bottom, rgba(0,255,102,.18) 0 2px, transparent 2px 4px)}
+    40%{opacity:.35; background:
+        radial-gradient(ellipse at 50% 50%, rgba(0,255,102,.18) 0%, transparent 55%),
+        repeating-linear-gradient(to bottom, rgba(0,255,102,.12) 0 2px, transparent 2px 5px)}
+    100%{opacity:0}
+  }
+</style>
 </head>
 <body>
   <div class="frame">
     <header><div class="brand">iris.sh</div><div id="progress">Kapitel 1/15</div></header>
 
-    <main class="terminal">
+    <main id="terminal" class="terminal">
       <div class="chapter-row"><span class="led"></span><span id="chapterTitle" class="chapter">Kapitel 1</span></div>
       <div class="card enter"><div id="chapterText" class="text caret"></div></div>
       <div class="hint" id="hint">🔁 Schüttle dein iPhone · Tippen geht auch · 🔊 Erst tippen, dann Ton</div>
@@ -82,8 +97,8 @@
     </footer>
   </div>
 
-  <!-- Beep als HTMLAudio (iOS-stabil) -->
-  <audio id="beepEl" preload="auto"></audio>
+  <!-- starker Overlay-Effekt -->
+  <div id="fx" class="fx" aria-hidden="true"></div>
 
   <!-- iOS Permission Overlay -->
   <div id="motionOverlay" class="overlay" role="dialog" aria-modal="true">
@@ -96,131 +111,198 @@
     </div>
   </div>
 
-  <script>
-    "use strict";
+<script>
+"use strict";
 
-    /* ---------- Story ---------- */
-    const chapters = [
-      "U-Bahn, Neon. Phil skizziert eine Unbekannte. Die Anzeige flackert ein fremdes Wort: „Wir waren schon hier, Maler.“ Er verliert sie im Dunkel.",
-      "Regen & Reklamen. Alles bunt, aber tot. Phil merkt: Bilder allein reichen nicht. Er will Kunst + Code.",
-      "Hinter einer summenden Stahltür: Lanas Atelier-Labor. Leinwände neben Serverracks. Symbol: „Before the stars were born.“",
-      "Sie bauen IRIS. Ein Porträt rendert—etwas Unmenschliches blickt zurück. Log: „It remembers.“",
-      "Phil testet IRIS. Farben klingen, Gerüche leuchten. Eine Stimme: „Welcome back.“ Seine Hand weiß den Weg.",
-      "Nachts RATT: Fragmente aus vormenschlichen Quellen, „before the first star“. Phil zittert; Lana bestätigt nichts.",
-      "Erste Tester: Tränen, Staunen. Ein Kind spricht zeitlose Silben. Hoffnung—und darunter: „It’s waking up.“",
-      "Vor dem Launch murmelt Phil die alte Sprache. Code: „LOOP_INITIATE“. Letzte Zeile: „Stop him.“",
-      "Bühne. Nora malt Licht. Dann fremd zu Phil: „Es hat dich gefunden.“ Sie bricht zusammen.",
-      "Blackout. Sirenen. Ein Riss wie flüssiges Glas. Eine zu lange Hand tastet hindurch.",
-      "Chaos. RATT leakt Vorn. Video: Phil, gealtert—„Stoppe die Schleife, bevor sie frisst.“ Lana verschwindet.",
-      "Spiegel. Sein Abbild bewegt sich frei: „Du hast IRIS gemacht? IRIS hat dich gemacht.“",
-      "IRIS ohne Sicherungen. Tunnel aus Bildern. Tor aus Licht. Dahinter: schwarzer Ozean, falsche Sterne.",
-      "Die Unbekannte: „IRIS ist der Schlüssel, nicht das Haus. Du warst oft hier—und gescheitert.“ Augen im Nichts.",
-      "U-Bahn erneut. Die Unbekannte, IRIS im Auge. „Noch einmal?“ Der Kreis schließt sich—oder beginnt."
-    ];
-    const total = chapters.length;
-    let index = +(localStorage.getItem("iris:index")||0) || 0;
+/* ---------- Story: kohärent & IRIS-konform (länger) ---------- */
+const chapters = [
+  "U-Bahn, Neon. Phil Splash skizziert die Frau gegenüber – ruhig, unerreichbar. Niemand sieht hin; alle starren auf Hologramme. In ihm wächst die Entscheidung: Wenn die Welt nur noch auf Screens reagiert, muss Kunst sie dort berühren.",
+  "Regen, Reklamen, Spiegelglas. Seine Farben wirken stumpf. Phil erinnert sich an Nächte, in denen echte Menschen vor echten Bildern standen. Er will Kunst und Code koppeln – nicht um zu fliehen, sondern um die Stadt wieder fühlbar zu machen.",
+  "Co-Working-Keller. Lana – präzise, schweigsam – blättert in seinen Skizzen. Neben Lötstationen: ein eingeritztes Symbol, uralt. „BEFORE THE STARS.“ Lana sagt nichts. „Bauen wir’s“, sagt sie dann.",
+  "IRIS entsteht: eine leichte Krone, die Muster im Gehirn in Bilder gießt. „Wie ein drittes Auge.“ Test-Log: ›it remembers‹ – eingetragen von keinem aus dem Team. Phil friert kurz, arbeitet weiter.",
+  "Selbsttest. Synästhesie: Töne schmecken nach Minze, Blau riecht nach Ozon. Zwischen den Farben schimmert ein Schatten – alt, geduldig, neugierig. Phil blinzelt ihn weg. IRIS funktioniert. Vielleicht zu gut.",
+  "Erste Sessions. Ein stotternder Rapper flutet den Raum mit flüssigem Flow. Eine gelähmte Malerin bewegt sich im VR-Körper. Hoffnung. Parallel warnt RATT, eine Hackergruppe: „IRIS trägt vorzeitliche Muster. Es ist nicht nur euer Code.“",
+  "Vorn – der unsichtbare Milliardär – bietet Labs und Geld, fordert Exklusivität. Lana bleibt kühl: „Nur live – vor allen.“ Phil nickt. Als sie gehen, wirkt das eingeritzte Symbol an der Tür … frischer.",
+  "Generalprobe mit Nora, Lanas Vertrauter. „Du denkst, ich zeichne“, flüstert Phil. Nora lacht und setzt die Krone auf. Das Bild wächst wie ein Tor, pulsierend. In der Tiefe lungert etwas, das keinen Namen hat – und sie anschaut.",
+  "Bühne. Weltstream. Nora malt mit Licht, das Publikum erstarrt. Dann dreht sie sich zu Phil und spricht in einer Sprache, die zeitlos klingt: „Es hat dich gefunden.“ Ihr Körper knickt ein; der Stream reißt ab.",
+  "Sirenen. Auf der Leinwand flackern Sternkarten, die niemals existierten. In Phils Kopfhörer murmelt eine Kindheit, die er nie hatte. Lana zieht ihn weg. „Kein Unfall“, sagt sie. „Etwas hat durch IRIS geantwortet.“",
+  "RATT leakt Daten: Schleifen kurz vor Noras Kollaps, als hätte IRIS etwas durchgelassen. Dokumente zeigen Vorns Firma mit Fragmenten eines Signals – datiert „vor dem ersten Stern“. Zwischen den Zeilen: Code von Phil – signiert in einer Zukunft, die nicht passiert ist.",
+  "Allein im Studio. Der Spiegel spricht zuerst: „Du hast IRIS gemacht? IRIS hat dich rekonstruiert.“ Phil erinnert sich, warum er die Frau immer wieder zeichnet: Sie ist das Echo seiner Entscheidung, hierher zurückzukehren.",
+  "Er setzt IRIS ohne Sicherungen auf. Sturz nach innen: U-Bahn-Bilder in endlosen Rahmen. Am Ende ein Raum aus Licht. Die Frau steht dort – und ist nicht ganz Mensch. „Du kommst immer hierher, wenn die Schleife brennt.“",
+  "Die Wahrheit ist ein Knoten: IRIS ist kein Werkzeug, sondern ein Schlüssel. Dahinter liegt etwas Älteres als Zeit; Vorn will es einfassen, RATT will es begrenzen. „Wähl diesmal anders“, sagt die Frau. „Sonst wiederholt sich alles – mit schöneren Bildern.“",
+  "U-Bahn, Neon – wieder Anfang. Die Frau gegenüber. In ihrem Auge glimmt eine dünne IRIS-Kontur. „Noch einmal?“, fragt sie. Phil nickt: „Noch einmal – aber nicht im Dunkeln.“ Draußen wird es minimal heller."
+];
+const total = chapters.length;
+let index = +(localStorage.getItem("iris:index")||0) || 0;
 
-    /* ---------- Elements ---------- */
-    const titleEl = document.getElementById("chapterTitle");
-    const textEl  = document.getElementById("chapterText");
-    const progressEl = document.getElementById("progress");
-    const hintEl = document.getElementById("hint");
-    const diagEl = document.getElementById("diag");
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
-    const resetBtn= document.getElementById("resetBtn");
-    const soundBtn= document.getElementById("soundBtn");
-    const sensorBtn=document.getElementById("sensorBtn");
-    const motionOverlay = document.getElementById("motionOverlay");
-    const enableBtn = document.getElementById("enableMotionBtn");   // <-- nur HIER deklariert
-    const permStatus = document.getElementById("permStatus");
-    const beepEl = document.getElementById("beepEl");
+/* ---------- Elements ---------- */
+const titleEl   = document.getElementById("chapterTitle");
+const textEl    = document.getElementById("chapterText");
+const progressEl= document.getElementById("progress");
+const hintEl    = document.getElementById("hint");
+const diagEl    = document.getElementById("diag");
+const terminalEl= document.getElementById("terminal");
+const fxEl      = document.getElementById("fx");
 
-    /* ---------- Typewriter + Card ---------- */
-    const TYPE_MODE="char", TYPE_SPEED=22;
-    let typingTimer=null, isTyping=false;
-    function typeText(el, text, done){
-      if (typingTimer) clearTimeout(typingTimer);
-      isTyping=true; el.classList.add("caret"); el.textContent="";
-      const parts = TYPE_MODE==="word" ? text.split(/(\s+)/) : Array.from(text);
-      let i=0; const step=()=>{ if(i<parts.length){ el.textContent+=parts[i++]; typingTimer=setTimeout(step,TYPE_SPEED); }
-        else { isTyping=false; el.classList.remove("caret"); done&&done(); } }; step();
-    }
-    function setCardAnimation(state){
-      const card=document.querySelector(".card");
-      card.classList.remove("enter","exit"); void card.offsetWidth; card.classList.add(state);
-    }
-    function render(){
-      const n=index+1; titleEl.textContent="Kapitel "+n; progressEl.textContent="Kapitel "+n+"/"+total;
-      localStorage.setItem("iris:index",String(index));
-      setCardAnimation("exit");
-      setTimeout(()=>{ textEl.textContent=""; setCardAnimation("enter"); typeText(textEl, chapters[index]); }, 140);
-    }
+const prevBtn   = document.getElementById("prevBtn");
+const nextBtn   = document.getElementById("nextBtn");
+const resetBtn  = document.getElementById("resetBtn");
+const soundBtn  = document.getElementById("soundBtn");
+const sensorBtn = document.getElementById("sensorBtn");
 
-    /* ---------- Audio (HTMLAudio primär) ---------- */
-    function makeWavBeep(ms=160,f=880){
-      const sr=44100,N=Math.floor(sr*(ms/1000)),b=new Uint8Array(44+N*2);
-      const w16=(o,v)=>{b[o]=v&255;b[o+1]=(v>>8)&255}, w32=(o,v)=>{b[o]=v&255;b[o+1]=(v>>8)&255;b[o+2]=(v>>16)&255;b[o+3]=(v>>24)&255};
-      b.set([82,73,70,70]); w32(4,36+N*2); b.set([87,65,86,69],8); b.set([102,109,116,32],12); w32(16,16);
-      w16(20,1); w16(22,1); w32(24,sr); w32(28,sr*2); w16(32,2); w16(34,16); b.set([100,97,116,97],36); w32(40,N*2);
-      const vol=.4; for(let i=0;i<N;i++){ const t=i/sr,s=Math.sin(2*Math.PI*f*t);
-        const env=Math.min(1,i/(sr*.01))*Math.min(1,(N-i)/(sr*.04)); const v=(Math.max(-1,Math.min(1,s*vol*env))*32767)|0; w16(44+i*2,v); }
-      return "data:audio/wav;base64,"+btoa(String.fromCharCode.apply(null,b));
-    }
-    beepEl.setAttribute("playsinline",""); beepEl.src = makeWavBeep();
-    function primeAudio(){
-      try{ beepEl.play().then(()=>{beepEl.pause(); beepEl.currentTime=0;}).catch(()=>{});}catch{}
-    }
-    function playBeep(){ try{ beepEl.currentTime=0; beepEl.play(); }catch{} }
-    document.addEventListener("pointerdown", function once(){ primeAudio(); document.removeEventListener("pointerdown", once); }, {passive:true});
+const motionOverlay = document.getElementById("motionOverlay");
+const enableBtn = document.getElementById("enableMotionBtn");
+const permStatus= document.getElementById("permStatus");
 
-    /* ---------- Navigation ---------- */
-    function nextChapter(){
-      if(isTyping){ if(typingTimer) clearTimeout(typingTimer); textEl.textContent=chapters[index]; isTyping=false; textEl.classList.remove("caret"); return; }
-      index=(index+1)%total; playBeep(); render();
-    }
-    function prevChapter(){
-      if(isTyping){ if(typingTimer) clearTimeout(typingTimer); textEl.textContent=chapters[index]; isTyping=false; textEl.classList.remove("caret"); return; }
-      index=(index-1+total)%total; playBeep(); render();
-    }
-    function resetStory(){ index=0; playBeep(); render(); }
-    document.querySelector("main").addEventListener("click", nextChapter);
-    nextBtn.addEventListener("click", nextChapter);
-    prevBtn.addEventListener("click", prevChapter);
-    resetBtn.addEventListener("click", resetStory);
-    soundBtn.addEventListener("click", primeAudio);
-    window.addEventListener("keydown", e=>{ if(e.key==="ArrowRight"||e.key===" ") nextChapter(); if(e.key==="ArrowLeft") prevChapter(); if(e.key.toLowerCase()==="r") resetStory(); });
+/* ---------- Typewriter + Card ---------- */
+const TYPE_MODE="char", TYPE_SPEED=18;
+let typingTimer=null, isTyping=false;
+function typeText(el, text, done){
+  if (typingTimer) clearTimeout(typingTimer);
+  isTyping=true; el.classList.add("caret"); el.textContent="";
+  const parts = TYPE_MODE==="word" ? text.split(/(\s+)/) : Array.from(text);
+  let i=0; const step=()=>{ if(i<parts.length){ el.textContent+=parts[i++]; typingTimer=setTimeout(step,TYPE_SPEED); }
+    else { isTyping=false; el.classList.remove("caret"); done&&done(); } };
+  step();
+}
+function setCardAnimation(state){
+  const card=document.querySelector(".card");
+  card.classList.remove("enter","exit"); void card.offsetWidth; card.classList.add(state);
+}
+function render(){
+  const n=index+1; titleEl.textContent="Kapitel "+n; progressEl.textContent="Kapitel "+n+"/"+total;
+  localStorage.setItem("iris:index",String(index));
+  setCardAnimation("exit");
+  setTimeout(()=>{ textEl.textContent=""; setCardAnimation("enter"); typeText(textEl, chapters[index]); }, 140);
+}
 
-    /* ---------- Shake (Permission im selben Tap) ---------- */
-    let lastShake=0; const SHAKE_THRESHOLD=18, SHAKE_COOLDOWN=900; let motionActive=false;
-    function handleMotion(ev){
-      const a=ev.accelerationIncludingGravity||ev.acceleration; if(!a) return;
-      const m=Math.sqrt((a.x||0)**2+(a.y||0)**2+(a.z||0)**2), now=Date.now();
-      if(m>SHAKE_THRESHOLD && (now-lastShake)>SHAKE_COOLDOWN){ lastShake=now; nextChapter(); }
-    }
-    function attachSensors(){ if(motionActive) return; window.addEventListener("devicemotion",handleMotion,{passive:true}); motionActive=true; hintEl.textContent="Schütteln aktiv – oder tippen"; }
-    function iOSNeedsPermission(){ return typeof DeviceMotionEvent!=="undefined" && typeof DeviceMotionEvent.requestPermission==="function"; }
+/* ---------- Audio: futuristischer, sphärischer Chord-FX ---------- */
+let audioCtx=null, audioReady=false;
+function ensureAudio(){ try{
+  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==="suspended") audioCtx.resume();
+  audioReady = (audioCtx.state==="running");
+  diagEl.textContent = audioReady ? "Audio bereit" : "Audio gesperrt";
+}catch{} }
+/* Pad-Chord (harmonisch, weich), startet sofort */
+function playFX(direction="next"){
+  if(!audioReady) return;
+  const ctx=audioCtx, now=ctx.currentTime;
+  const dur = 0.72; // etwas länger, sphärisch
+  // Akkorde: Next = A-moll (A4, C5, E5); Prev = G-moll (G4, Bb4, D5)
+  const notes = direction==="prev" ? [392.00, 466.16, 587.33] : [440.00, 523.25, 659.25];
 
-    function requestMotionPermission(){
-      primeAudio(); // nichts awaiten → bleibt in derselben User-Geste
-      if(iOSNeedsPermission()){
-        DeviceMotionEvent.requestPermission().then(state=>{
-          if(state==="granted"){ attachSensors(); motionOverlay.classList.remove("show"); permStatus.textContent="Erlaubt ✔︎"; }
-          else { permStatus.textContent="Abgelehnt ✖︎ – Safari-Einstellung prüfen."; }
-        }).catch(err=>{ permStatus.textContent="Fehler: "+err; });
-      } else { attachSensors(); motionOverlay.classList.remove("show"); permStatus.textContent="Aktiv ✔︎"; }
-    }
+  // Reverb-ähnlicher Feedback-Delay mit Lowpass im Loop
+  const delay = ctx.createDelay(1.0); delay.delayTime.value = 0.22;
+  const lp    = ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value = 1800;
+  const fb    = ctx.createGain(); fb.gain.value = 0.28;
+  delay.connect(lp); lp.connect(fb); fb.connect(delay);
 
-    enableBtn.addEventListener("click", requestMotionPermission, {passive:true});
-    enableBtn.addEventListener("touchend", requestMotionPermission, {passive:true});
+  const master = ctx.createGain(); master.gain.value=0.0001;
+  delay.connect(master);
 
-    sensorBtn.addEventListener("click", ()=>{ alert("Sensor aktiv: "+motionActive); });
+  // sanfter Stereo-Spread
+  const merger = ctx.createChannelMerger(2);
+  master.connect(merger);
+  merger.connect(ctx.destination);
 
-    window.addEventListener("load", ()=>{
-      try{ render(); }catch(e){ diagEl.textContent="Render-Fehler: "+e; }
-      if(iOSNeedsPermission()) motionOverlay.classList.add("show"); else attachSensors();
-    });
-  </script>
+  // Hüllkurve
+  master.gain.setValueAtTime(0.0001, now);
+  master.gain.exponentialRampToValueAtTime(0.26, now+0.03);
+  master.gain.exponentialRampToValueAtTime(0.0001, now+dur);
+
+  notes.forEach((f, i)=>{
+    const o1=ctx.createOscillator(), o2=ctx.createOscillator();
+    const g =ctx.createGain();
+    const p =ctx.createStereoPanner();
+    const fl=ctx.createBiquadFilter();
+
+    o1.type="sine"; o2.type="triangle";
+    o1.frequency.setValueAtTime(f, now);
+    o2.frequency.setValueAtTime(f, now);
+    o2.detune.setValueAtTime((i-1)*6, now); // leichte Verstimmung
+
+    // sanfter Vibrato-LFO
+    const lfo=ctx.createOscillator(), lfoGain=ctx.createGain();
+    lfo.frequency.value=5.2; lfoGain.gain.value=3; // ~3 Cent
+    lfo.connect(lfoGain); lfoGain.connect(o1.frequency);
+
+    // Filter weich
+    fl.type="lowpass"; fl.frequency.setValueAtTime(4200-(i*700), now);
+    g.gain.value=0.28 - i*0.04; // obere Stimmen leiser
+    p.pan.value = (i-1)*0.35;
+
+    o1.connect(g); o2.connect(g); g.connect(fl); fl.connect(delay);
+    o1.start(now); o2.start(now); lfo.start(now);
+    o1.stop(now+dur+0.05); o2.stop(now+dur+0.05); lfo.stop(now+dur+0.05);
+  });
+}
+
+/* Audio beim ersten Pointer-Tap freischalten (iOS) */
+document.addEventListener("pointerdown", function once(){
+  ensureAudio();
+  document.removeEventListener("pointerdown", once);
+},{passive:true});
+
+/* ---------- Visuelle FX ---------- */
+function pulseFX(){
+  // Aperture-Flash
+  fxEl.classList.remove("show"); void fxEl.offsetWidth; fxEl.classList.add("show");
+  // kurzer Terminal-Shock
+  terminalEl.classList.add("shock");
+  setTimeout(()=>terminalEl.classList.remove("shock"), 220);
+}
+
+/* ---------- Navigation ---------- */
+function nextChapter(){
+  if(isTyping){ if(typingTimer) clearTimeout(typingTimer); textEl.textContent=chapters[index]; isTyping=false; textEl.classList.remove("caret"); return; }
+  index=(index+1)%total; playFX("next"); pulseFX(); render();
+}
+function prevChapter(){
+  if(isTyping){ if(typingTimer) clearTimeout(typingTimer); textEl.textContent=chapters[index]; isTyping=false; textEl.classList.remove("caret"); return; }
+  index=(index-1+total)%total; playFX("prev"); pulseFX(); render();
+}
+function resetStory(){ index=0; playFX("next"); pulseFX(); render(); }
+
+document.querySelector("main").addEventListener("click", nextChapter);
+nextBtn.addEventListener("click", nextChapter);
+prevBtn.addEventListener("click", prevChapter);
+resetBtn.addEventListener("click", resetStory);
+soundBtn.addEventListener("click", ensureAudio);
+window.addEventListener("keydown", e=>{
+  if(e.key==="ArrowRight"||e.key===" ") nextChapter();
+  if(e.key==="ArrowLeft") prevChapter();
+  if(e.key.toLowerCase()==="r") resetStory();
+});
+
+/* ---------- Shake (iOS-Permission in derselben Geste) ---------- */
+let lastShake=0; const SHAKE_THRESHOLD=18, SHAKE_COOLDOWN=900; let motionActive=false;
+function handleMotion(ev){
+  const a=ev.accelerationIncludingGravity||ev.acceleration; if(!a) return;
+  const m=Math.sqrt((a.x||0)**2+(a.y||0)**2+(a.z||0)**2), now=Date.now();
+  if(m>SHAKE_THRESHOLD && (now-lastShake)>SHAKE_COOLDOWN){ lastShake=now; nextChapter(); }
+}
+function attachSensors(){ if(motionActive) return; window.addEventListener("devicemotion",handleMotion,{passive:true}); motionActive=true; hintEl.textContent="Schütteln aktiv – oder tippen"; }
+function iOSNeedsPermission(){ return typeof DeviceMotionEvent!=="undefined" && typeof DeviceMotionEvent.requestPermission==="function"; }
+/* Permission-Call ohne await, direkt in der Geste */
+function requestMotionPermission(){
+  ensureAudio(); // nichts awaiten → bleibt in derselben Geste
+  if(iOSNeedsPermission()){
+    DeviceMotionEvent.requestPermission().then(state=>{
+      if(state==="granted"){ attachSensors(); motionOverlay.classList.remove("show"); permStatus.textContent="Erlaubt ✔︎"; }
+      else { permStatus.textContent="Abgelehnt ✖︎ – Safari-Einstellung prüfen."; }
+    }).catch(err=>{ permStatus.textContent="Fehler: "+err; });
+  } else { attachSensors(); motionOverlay.classList.remove("show"); permStatus.textContent="Aktiv ✔︎"; }
+}
+enableBtn.addEventListener("click", requestMotionPermission, {passive:true});
+enableBtn.addEventListener("touchend", requestMotionPermission, {passive:true});
+
+/* ---------- Init ---------- */
+window.addEventListener("load", ()=>{
+  try{ render(); }catch(e){ diagEl.textContent="Render-Fehler: "+e; }
+  if(iOSNeedsPermission()) motionOverlay.classList.add("show"); else attachSensors();
+});
+</script>
 </body>
 </html>
 
