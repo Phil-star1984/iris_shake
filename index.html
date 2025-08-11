@@ -3,189 +3,208 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0f0c" />
-  <title>IRIS — Shake to Read</title>
+  <meta name="theme-color" content="#031a0d" />
+  <title>IRIS — Shake to Read (Terminal)</title>
   <style>
-    :root { --bg:#0b0f0c; --fg:#c8ffb1; --muted:#6ea06a; --accent:#a3ff12; --scan:rgba(163,255,18,0.06); }
+    /* ===== Linux/Terminal Ästhetik (CRT, Neon-Grün) ===== */
+    :root {
+      --bg: #031a0d;          /* sehr dunkles Grün-Schwarz */
+      --fg: #c8ffb1;          /* helle Phosphor-Schrift */
+      --accent: #a3ff12;      /* Terminal-Grün */
+      --muted: #69a86b;       /* gedämpftes Grün */
+      --grid: rgba(163,255,18,0.06);
+      --border: #0f3b1f;
+    }
     * { box-sizing: border-box; }
     html, body { height: 100%; }
     body {
-      margin:0; background:var(--bg); color:var(--fg);
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      -webkit-font-smoothing: antialiased; line-height:1.5; overflow:hidden;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.55;
+      overflow: hidden;
     }
-    .frame { position:relative; width:100%; height:100%; padding:calc(env(safe-area-inset-top)+16px) 16px calc(env(safe-area-inset-bottom)+16px);
-      display:grid; grid-template-rows:auto 1fr auto; gap:12px; }
-
-    header { display:flex; align-items:center; justify-content:space-between; letter-spacing:.03em; opacity:.9; font-size:14px; }
-    .brand::before { content:"root@iris:"; margin-right:8px; color:var(--muted); } .brand { color:var(--accent); }
-
-    .terminal { position:relative; border:1px solid #123a1a;
-      background:linear-gradient(0deg,rgba(0,0,0,.2),rgba(255,255,255,.02)),linear-gradient(180deg,rgba(15,40,20,.35),rgba(15,40,20,.25));
-      border-radius:12px; padding:18px; box-shadow:0 0 0 1px rgba(72,255,100,.05), 0 8px 30px rgba(0,0,0,.4); overflow:hidden; }
-
-    .terminal::after { content:""; position:absolute; inset:0;
-      background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,var(--scan) 3px,transparent 4px);
-      pointer-events:none; mix-blend-mode:lighten; animation:scan 6s linear infinite; opacity:.35; }
-    @keyframes scan { 0%{transform:translateY(-10%);} 100%{transform:translateY(10%);} }
-
-    .chapter-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
-    .dot { width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent);}
-    .chapter { font-size:clamp(18px,4.5vw,22px); color:var(--muted); letter-spacing:.04em; }
-
-    .card { position:relative; min-height:50vh; display:flex; align-items:center; }
-    .text { font-size:clamp(18px,5.6vw,24px); line-height:1.6; letter-spacing:.01em; text-wrap:pretty; }
-    .debug { font-size:12px; color:#bde8b6; margin-top:8px; white-space:pre-wrap; max-height:20vh; overflow:auto; }
-
-    /* Card transitions */
-    .enter { animation: enter 420ms cubic-bezier(.2,.8,.16,1) both; }
-    .exit  { animation: exit 300ms cubic-bezier(.55,.08,.68,.53) both; }
-    @keyframes enter {
-      from { transform: translateY(8vh) scale(.98); opacity:0; filter:blur(4px); }
-      to   { transform: translateY(0)    scale(1);   opacity:1; filter:blur(0);   }
+    /* leichter CRT-Vibe */
+    .crt { position: fixed; inset: 0; pointer-events: none; }
+    .crt::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, var(--grid) 3px, transparent 4px);
+      mix-blend-mode: lighten;
+      opacity: .35;
+      animation: scan 7s linear infinite;
     }
-    @keyframes exit {
-      from { transform: translateY(0)    scale(1);   opacity:1; }
-      to   { transform: translateY(-5vh) scale(.98); opacity:0; }
+    @keyframes scan { 0% { transform: translateY(-6%); } 100% { transform: translateY(6%); } }
+    .crt::after {
+      content: "";
+      position: absolute; inset: -40px;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.35) 85%);
+      pointer-events: none;
     }
 
-    /* Typewriter */
-    .caret::after { content:"▌"; margin-left:2px; animation: blink 1s steps(1,end) infinite; }
+    .frame {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      padding: calc(env(safe-area-inset-top) + 12px) 14px calc(env(safe-area-inset-bottom) + 14px);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 10px;
+    }
+
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 14px; opacity: .92; letter-spacing: .02em;
+    }
+    .brand { color: var(--accent); }
+    .brand::before { content: "root@iris:~$"; color: var(--muted); margin-right: 10px; }
+
+    .terminal{
+      position: relative;
+      height: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background:
+        linear-gradient(180deg, rgba(3,26,13,0.85), rgba(3,26,13,0.78)),
+        linear-gradient(0deg, rgba(0,0,0,0.12), rgba(255,255,255,0.02));
+      box-shadow: 0 0 0 1px rgba(163,255,18,0.05), 0 12px 40px rgba(0,0,0,0.5);
+      padding: 18px;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 12px;
+    }
+
+    .chapter-row { display: flex; align-items: center; gap: 8px; }
+    .led { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+    .chapter { font-size: clamp(18px, 4.4vw, 22px); color: var(--muted); letter-spacing: .04em; }
+
+    .card { position: relative; min-height: 52vh; display: flex; align-items: center; }
+    .text { font-size: clamp(18px, 5.8vw, 24px); line-height: 1.7; letter-spacing: .01em; text-wrap: pretty; }
+    .caret::after { content: "▌"; margin-left: 2px; animation: blink 1s steps(1,end) infinite; }
     @keyframes blink { 50% { opacity: 0; } }
 
-    footer { display:grid; grid-template-columns:1fr auto; align-items:center; gap:8px; }
-    .hint { font-size:13px; color:#9ad08f; opacity:.9; }
-    .controls { display:flex; gap:8px; flex-wrap:wrap; }
-    button { background:transparent; border:1px solid #1f5a2c; color:var(--fg); padding:10px 14px; border-radius:10px; font-size:14px; cursor:pointer; touch-action:manipulation; }
-    .primary { border-color:#3fa64e; } .danger { border-color:#7a2f2f; color:#ffb1b1; }
+    .enter { animation: enter 420ms cubic-bezier(.2,.8,.16,1) both; }
+    .exit  { animation: exit  280ms cubic-bezier(.55,.08,.68,.53) both; }
+    @keyframes enter { from { transform: translateY(10vh) scale(.985); opacity: 0; filter: blur(4px); }
+                       to   { transform: translateY(0)    scale(1);    opacity: 1; filter: blur(0); } }
+    @keyframes exit  { from { transform: translateY(0)    scale(1);    opacity: 1; }
+                       to   { transform: translateY(-6vh) scale(.985); opacity: 0; } }
 
-    .overlay { position:fixed; inset:0; background:rgba(4,8,6,.92); display:none; align-items:center; justify-content:center; padding:24px; z-index:999; }
-    .overlay.show { display:flex; }
-    .card-modal { max-width:520px; border:1px solid #174427; background:linear-gradient(180deg,rgba(10,20,14,.9),rgba(10,20,14,.8));
-      box-shadow:0 24px 80px rgba(0,0,0,.6); border-radius:14px; padding:22px; text-align:center; }
-    .card-modal h2 { margin:0 0 10px; font-weight:600; color:var(--accent);}
-    .card-modal p { margin:0 0 12px; color:#b8ffb1; }
-    .status { font-size:12px; color:#a7dba0; opacity:.9; margin-top:6px; }
-    .audio { font-size:12px; color:#c5f0c1; margin-top:6px; }
+    footer { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; }
+    .hint  { font-size: 12.5px; color: #a3d89b; opacity: .95; }
+    .controls { display: flex; gap: 8px; flex-wrap: wrap; }
+    button {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--fg);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer; touch-action: manipulation;
+    }
+    button:hover { border-color: #1e6d3a; }
+    .primary { border-color: #2d9d51; }
+    .danger  { border-color: #7a2f2f; color: #ffb1b1; }
+
+    .overlay { position: fixed; inset: 0; background: rgba(3,26,13,.94); display: none; align-items: center; justify-content: center; padding: 24px; z-index: 999; }
+    .overlay.show { display: flex; }
+    .card-modal { max-width: 520px; border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(6,38,20,.95), rgba(6,38,20,.88));
+      box-shadow: 0 24px 80px rgba(0,0,0,.6); border-radius: 14px; padding: 22px; text-align: center; }
+    .card-modal h2 { margin: 0 0 10px; font-weight: 600; color: var(--accent); }
+    .card-modal p  { margin: 0 0 10px; color: #b8ffb1; }
+    .status { font-size: 12px; color: #c8ffb1; opacity: .9; margin-top: 6px; }
   </style>
 </head>
 <body>
   <div class="frame">
     <header>
-      <div class="brand">$ iris.sh</div>
+      <div class="brand">iris.sh</div>
       <div id="progress">Kapitel 1/15</div>
     </header>
 
-    <main class="terminal" id="terminal">
-      <div class="chapter-row"><span class="dot"></span><span class="chapter" id="chapterTitle">Kapitel 1</span></div>
-      <div class="card enter">
-        <div id="chapterText" class="text caret"></div>
-      </div>
-      <div class="debug" id="debug"></div>
+    <main class="terminal">
+      <div class="chapter-row"><span class="led"></span><span id="chapterTitle" class="chapter">Kapitel 1</span></div>
+      <div class="card enter"><div id="chapterText" class="text caret"></div></div>
+      <div class="hint" id="hint">🔁 Schüttle dein iPhone, um weiterzublättern · Tipp: Tippen geht auch · 🔊 Erst tippen, dann Ton</div>
     </main>
 
     <footer>
-      <div class="hint" id="hint">🔁 Schüttle dein iPhone, um weiterzublättern • Tippen geht auch • 🔊 Erst tippen, dann Sound</div>
+      <div class="hint" id="diag"></div>
       <div class="controls">
-        <button id="prevBtn" aria-label="Zurück (Debug)">Zurück</button>
-        <button id="nextBtn" class="primary" aria-label="Weiter">Weiter</button>
-        <button id="resetBtn" class="danger" aria-label="Neustart">Reset</button>
-        <button id="sensorBtn" aria-label="Sensor-Status">Sensor</button>
-        <button id="soundBtn" aria-label="Sound-Test">Sound</button>
+        <button id="prevBtn">Zurück</button>
+        <button id="nextBtn" class="primary">Weiter</button>
+        <button id="resetBtn" class="danger">Reset</button>
+        <button id="soundBtn">Audio</button>
+        <button id="sensorBtn">Sensor</button>
       </div>
     </footer>
   </div>
+  <div class="crt" aria-hidden="true"></div>
 
+  <!-- Optional: kleines <audio> für iOS, falls WebAudio zickt (wird beim ersten Tap abgespielt) -->
+  <audio id="beepEl" preload="auto"></audio>
+
+  <!-- Overlay für iOS Motion Permission -->
   <div id="motionOverlay" class="overlay" role="dialog" aria-modal="true">
     <div class="card-modal">
       <h2>Bewegung aktivieren</h2>
-      <p>Um per <strong>Schütteln</strong> zu blättern, benötigt Safari die Erlaubnis für Bewegungssensoren.</p>
-      <button id="enableMotionBtn" class="primary">Bewegung erlauben</button>
+      <p>Tippe „Erlauben“, um Schütteln zu nutzen. (Audio wird dabei aktiviert.)</p>
+      <button id="enableMotionBtn" class="primary">Erlauben</button>
       <div class="status" id="permStatus"></div>
-      <div class="audio" id="audioStatus"></div>
-      <div style="margin-top:10px; font-size:12px; color:#88b887">Alternativ: Tippe auf <em>Weiter</em> (aktiviert auch Audio).</div>
-      <div class="status" style="margin-top:8px;">
-        <strong>Tipp (iOS):</strong> Einstellungen → Safari → „Bewegung & Ausrichtung Zugriff“ aktivieren.
-      </div>
+      <div class="status">iOS: Einstellungen → Safari → „Bewegung & Ausrichtung Zugriff“</div>
     </div>
   </div>
 
   <script>
-    /********* Story & State *********/
-    const chapters = ["U‑Bahn. Neon flackert. Phil skizziert eine Unbekannte. Stationsname glitched. Ein Flüstern: „Wir waren schon hier, Maler.“", "Regenstadt. Farben wirken leer. Auf einem Billboard blitzt sein älteres Gesicht. Entscheidung: Kunst + Code.", "Versteckter Maker‑Space. Lana – Augen wie Scanner. An der Wand: Symbol + „Before the stars were born“.", "Porträt‑Render flackert – für einen Atemzug blickt etwas Unmenschliches zurück. Log: „It remembers.“", "IRIS‑Krone. Synästhesie. Eine Stimme im Untergrund seines Gedächtnisses: „Welcome back.“", "Terminal, grüner Text. RATT: Fragmente aus vormenschlichen Quellen. „Before the first star.“", "Tester weinen vor Staunen. Ein Kind spricht – aber in einer Sprache ohne Zeit. Flüstern: „It’s waking up.“", "Phil murmelt im Schlaf die alte Sprache. Code: LOOP_INITIATE. Letzte Zeile: „Stop him.“", "Bühne. Nora malt Licht. Dann wendet sie sich an Phil – in der alten Sprache: „Es hat dich gefunden.“ Kollaps.", "Stadt erlischt. In der Luft ein Riss, eine lange Hand tastet hindurch. Phils Kopf füllt sich mit sterbenden Sternen.", "Leaks. Vorn verstrickt. Video: Phil, gealtert: „Stoppe die Schleife.“", "Das Spiegelbild spricht zuerst. „Du glaubst, du hast IRIS gemacht. IRIS hat dich gemacht.“", "IRIS ohne Sicherungen. Tunnel aus Bildern der Unbekannten. Tor aus Licht. Dahinter: schwarzer Ozean, falsche Sternbilder.", "Augen im Nichts. Die Unbekannte: „IRIS ist der Schlüssel, nicht das Haus. Du warst schon oft hier.“", "Phil „erwacht“ wieder in der U‑Bahn. Die Unbekannte trägt jetzt ein glimmendes IRIS. „Noch einmal?“"];
+    /********* Story: kohärente Micro-Szenen *********/
+    const chapters = [
+      "U-Bahn, Neon. Phil skizziert eine Unbekannte. Die Anzeige flackert ein fremdes Wort, ein Flüstern an seinem Ohr: „Wir waren schon hier, Maler.“ Er verliert sie im Dunkel.",
+      "Draußen Regen und Reklamen. Alles wirkt bunt, aber tot. Phil spürt: Seine Bilder allein reichen nicht. Er entscheidet, Kunst und Code zu verschmelzen.",
+      "Hinter einer summenden Stahltür: Lanas Atelier-Labor. Leinwände neben Serverracks. An der Wand ein Symbol – eingeritzt: „Before the stars were born.“",
+      "Sie bauen IRIS. Ein Porträt rendert, und für einen Atemzug blickt etwas Unmenschliches zurück. Im Log tippt eine unsichtbare Hand: „It remembers.“",
+      "Phil testet IRIS. Farben klingen, Gerüche leuchten. Eine Stimme aus der Tiefe seiner Erinnerung sagt: „Welcome back.“ Seine Hand zeichnet, als wüsste sie den Weg.",
+      "Nachts meldet sich RATT im Terminal: Codefragmente aus vormenschlichen Quellen, „before the first star“. Phil zittert; Lana bleibt still – und bestätigt nichts.",
+      "Die ersten Tester: Tränen, Lachen, Staunen. Ein Kind spricht in einer Sprache ohne Zeit. Hoffnung keimt – und darunter ein leises: „It’s waking up.“",
+      "Vor dem Launch murmelt Phil im Schlaf die alte Sprache. Im Code erscheint „LOOP_INITIATE“. Die letzte Zeile ist Klartext: „Stop him.“ Lana sieht ihn lange an.",
+      "Bühne, Weltöffentlichkeit. Nora malt mit IRIS Licht in die Luft – dann wendet sie sich an Phil, spricht fremd: „Es hat dich gefunden.“ Sie bricht zusammen.",
+      "Blackout. Sirenen. In der Luft öffnet sich ein Riss wie flüssiges Glas. Eine zu lange Hand tastet hindurch. In Phils Kopf sterben Sterne in Endlosschleife.",
+      "Chaos danach. RATT leakt Vorns Verstrickung. Eine Videobotschaft zeigt Phil – gealtert: „Stoppe die Schleife, bevor sie wieder frisst.“ Lana ist verschwunden.",
+      "Allein vor dem Spiegel. Sein Spiegelbild bewegt sich unabhängig: „Du glaubst, du hast IRIS gemacht. IRIS hat dich gemacht.“ Phil fasst den Rand der Wirklichkeit.",
+      "Er startet IRIS ohne Sicherungen. Ein Tunnel aus Bildern der Unbekannten. Am Ende ein Tor aus pulsierendem Licht. Dahinter: ein schwarzer Ozean, falsche Sterne.",
+      "Die Unbekannte tritt aus dem Dunkel: „IRIS ist der Schlüssel, nicht das Haus. Du warst schon oft hier – und bist gescheitert.“ Augen blicken aus dem Nichts.",
+      "Phil „erwacht“ in der U-Bahn. Die Szene vom Anfang. Die Unbekannte sitzt ihm gegenüber, im Auge glimmt IRIS. „Noch einmal?“ Der Kreis schließt sich – oder beginnt."
+    ];
     const total = chapters.length;
     let index = parseInt(localStorage.getItem("iris:index") || "0", 10);
     if (Number.isNaN(index) || index < 0 || index >= total) index = 0;
 
-    const TYPE_MODE = "char"; // "char" | "word"
-    const TYPE_SPEED = 22; // ms
+    /********* Elements *********/
+    const titleEl   = document.getElementById("chapterTitle");
+    const textEl    = document.getElementById("chapterText");
+    const progressEl= document.getElementById("progress");
+    const hintEl    = document.getElementById("hint");
+    const diagEl    = document.getElementById("diag");
 
-    const chapterTitleEl = document.getElementById("chapterTitle");
-    const chapterTextEl  = document.getElementById("chapterText");
-    const progressEl     = document.getElementById("progress");
-    const hintEl         = document.getElementById("hint");
-    const debugEl        = document.getElementById("debug");
+    const prevBtn   = document.getElementById("prevBtn");
+    const nextBtn   = document.getElementById("nextBtn");
+    const resetBtn  = document.getElementById("resetBtn");
+    const soundBtn  = document.getElementById("soundBtn");
+    const sensorBtn = document.getElementById("sensorBtn");
 
-    const prevBtn  = document.getElementById("prevBtn");
-    const nextBtn  = document.getElementById("nextBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const sensorBtn= document.getElementById("sensorBtn");
-    const soundBtn = document.getElementById("soundBtn");
+    const motionOverlay = document.getElementById("motionOverlay");
+    const enableBtn     = document.getElementById("enableMotionBtn");
+    const permStatus    = document.getElementById("permStatus");
 
+    /********* Typewriter *********/
+    const TYPE_MODE  = "char"; // "char" | "word"
+    const TYPE_SPEED = 22;
     let typingTimer = null;
     let isTyping = false;
 
-    /********* Audio *********/
-    let audioCtx = null;
-    let audioUnlocked = false;
-    function logDebug(msg) {
-      const time = new Date().toLocaleTimeString();
-      debugEl.textContent = "[" + time + "] " + msg + "\n" + debugEl.textContent.slice(0, 2000);
-    }
-
-    async function initAudio() {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === "suspended") await audioCtx.resume();
-        audioUnlocked = (audioCtx.state === "running");
-        document.getElementById("audioStatus")?.replaceChildren(document.createTextNode("Audio: " + audioCtx.state));
-        logDebug("AudioContext: " + audioCtx.state);
-        // play a quiet blip to verify
-        await playBeep(0.15, 0.18);
-      } catch (e) {
-        logDebug("Audio init error: " + e);
-      }
-    }
-
-    async function playBeep(volume=0.22, duration=0.18) {
-      try {
-        if (!audioCtx) return;
-        if (audioCtx.state === "suspended") await audioCtx.resume();
-        const ctx = audioCtx;
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type = "square"; // markanter
-        o.frequency.setValueAtTime(880, ctx.currentTime);
-        o.connect(g); g.connect(ctx.destination);
-        const now = ctx.currentTime;
-        const attack = 0.006, release = duration - attack;
-        g.gain.setValueAtTime(0.0001, now);
-        g.gain.exponentialRampToValueAtTime(Math.max(0.001, volume), now + attack);
-        g.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-        o.start(now);
-        o.stop(now + duration + 0.01);
-      } catch (e) {
-        logDebug("Beep error: " + e);
-      }
-    }
-
-    function primeAudioOnFirstGesture() {
-      const once = async () => { await initAudio(); document.removeEventListener("touchstart", once); document.removeEventListener("click", once); };
-      document.addEventListener("touchstart", once, {passive:true, once:true});
-      document.addEventListener("click", once, {once:true});
-    }
-
-    /********* Typing *********/
     function typeText(el, text, done) {
       if (typingTimer) clearTimeout(typingTimer);
       isTyping = true;
@@ -194,169 +213,158 @@
       const parts = TYPE_MODE === "word" ? text.split(/(\s+)/) : Array.from(text);
       let i = 0;
       const step = () => {
-        if (i < parts.length) {
-          el.textContent += parts[i++];
-          typingTimer = setTimeout(step, TYPE_SPEED);
-        } else {
-          isTyping = false;
-          el.classList.remove("caret");
-          if (done) done();
-        }
+        if (i < parts.length) { el.textContent += parts[i++]; typingTimer = setTimeout(step, TYPE_SPEED); }
+        else { isTyping = false; el.classList.remove("caret"); done && done(); }
       };
       step();
     }
-
     function setCardAnimation(state) {
       const card = document.querySelector(".card");
-      card.classList.remove("enter","exit");
-      void card.offsetWidth;
-      card.classList.add(state);
+      card.classList.remove("enter","exit"); void card.offsetWidth; card.classList.add(state);
     }
-
     function render() {
       const n = index + 1;
-      chapterTitleEl.textContent = "Kapitel " + n;
+      titleEl.textContent = "Kapitel " + n;
       progressEl.textContent = "Kapitel " + n + "/" + total;
       localStorage.setItem("iris:index", String(index));
-
       setCardAnimation("exit");
-      setTimeout(() => {
-        chapterTextEl.textContent = "";
-        setCardAnimation("enter");
-        typeText(chapterTextEl, chapters[index]);
-      }, 160);
+      setTimeout(() => { textEl.textContent = ""; setCardAnimation("enter"); typeText(textEl, chapters[index]); }, 150);
     }
 
-    async function nextChapter() {
-      if (!audioUnlocked) await initAudio();
-      await playBeep();
-      if (isTyping) {
-        if (typingTimer) clearTimeout(typingTimer);
-        chapterTextEl.textContent = chapters[index];
-        isTyping = false;
-        chapterTextEl.classList.remove("caret");
-        return;
+    /********* Audio (robust für iOS) *********/
+    let audioCtx = null;
+    const beepEl = document.getElementById("beepEl");
+
+    // Erzeuge On-the-fly ein kurzes Beep-WAV und setze es als src (stabil auf iOS HTMLAudio)
+    function makeWavBeep(durationMs=160, freq=880) {
+      const sampleRate = 44100;
+      const samples = Math.floor(sampleRate * (durationMs/1000));
+      const buffer = new Uint8Array(44 + samples*2);
+      function w16(o,v){ buffer[o]=v&255; buffer[o+1]=(v>>8)&255; }
+      function w32(o,v){ buffer[o]=v&255; buffer[o+1]=(v>>8)&255; buffer[o+2]=(v>>16)&255; buffer[o+3]=(v>>24)&255; }
+      buffer.set([82,73,70,70]); w32(4, 36 + samples*2);
+      buffer.set([87,65,86,69],8); buffer.set([102,109,116,32],12); w32(16,16);
+      w16(20,1); w16(22,1); w32(24,sampleRate); w32(28,sampleRate*2);
+      w16(32,2); w16(34,16); buffer.set([100,97,116,97],36); w32(40, samples*2);
+      const vol = 0.35;
+      for (let i=0;i<samples;i++) {
+        const t = i / sampleRate;
+        const s = Math.sin(2*Math.PI*freq*t);
+        const env = Math.min(1, i/(sampleRate*0.01)) * Math.min(1, (samples-i)/(sampleRate*0.04)); // Attack/Release
+        const val = Math.max(-1, Math.min(1, s*vol*env));
+        const int16 = (val*32767)|0;
+        w16(44+i*2, int16);
       }
-      index = (index + 1) % total;
-      render();
+      return "data:audio/wav;base64," + btoa(String.fromCharCode.apply(null, buffer));
     }
-    async function prevChapter() {
-      if (!audioUnlocked) await initAudio();
-      await playBeep(0.16, 0.12);
-      if (isTyping) {
-        if (typingTimer) clearTimeout(typingTimer);
-        chapterTextEl.textContent = chapters[index];
-        isTyping = false;
-        chapterTextEl.classList.remove("caret");
-        return;
+    beepEl.setAttribute("playsinline","");
+    beepEl.setAttribute("src", makeWavBeep());
+
+    async function initAudio() {
+      try {
+        // WebAudio optional (für Desktop), HTMLAudio primär
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") await audioCtx.resume();
+        // HTMLAudio „primen“
+        try { await beepEl.play(); beepEl.pause(); beepEl.currentTime = 0; } catch(_e) {}
+        diag("Audio bereit");
+      } catch(e) { diag("Audio-Init: " + e); }
+    }
+    async function playBeep() {
+      try { beepEl.currentTime = 0; await beepEl.play(); return; }
+      catch(e) {
+        if (audioCtx) {
+          const ctx = audioCtx;
+          const o = ctx.createOscillator(); const g = ctx.createGain();
+          o.type="square"; o.frequency.value=880; o.connect(g); g.connect(ctx.destination);
+          const now = ctx.currentTime; g.gain.setValueAtTime(0.0001, now);
+          g.gain.exponentialRampToValueAtTime(0.22, now+0.01);
+          g.gain.exponentialRampToValueAtTime(0.0001, now+0.18);
+          o.start(now); o.stop(now+0.2);
+        }
       }
-      index = (index - 1 + total) % total;
-      render();
     }
-    function resetStory() { index = 0; render(); }
+    function unlockEverythingOnce() {
+      const once = async () => { await initAudio(); document.removeEventListener("pointerdown", once); };
+      document.addEventListener("pointerdown", once, { passive:true, once:true });
+    }
+    function diag(msg){ diagEl.textContent = msg; }
+
+    /********* Navigation *********/
+    function nextChapter() {
+      if (isTyping) { if (typingTimer) clearTimeout(typingTimer); textEl.textContent = chapters[index]; isTyping=false; textEl.classList.remove("caret"); return; }
+      index = (index + 1) % total; playBeep(); render();
+    }
+    function prevChapter() {
+      if (isTyping) { if (typingTimer) clearTimeout(typingTimer); textEl.textContent = chapters[index]; isTyping=false; textEl.classList.remove("caret"); return; }
+      index = (index - 1 + total) % total; playBeep(); render();
+    }
+    function resetStory() { index = 0; playBeep(); render(); }
 
     document.querySelector("main").addEventListener("click", nextChapter);
     nextBtn.addEventListener("click", nextChapter);
     prevBtn.addEventListener("click", prevChapter);
     resetBtn.addEventListener("click", resetStory);
     soundBtn.addEventListener("click", initAudio);
-
     window.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight" || e.key === " " ) nextChapter();
       if (e.key === "ArrowLeft") prevChapter();
       if (e.key.toLowerCase() === "r") resetStory();
     });
 
-    /********* Motion *********/
+    /********* Shake *********/
     let lastShake = 0;
     const SHAKE_THRESHOLD = 18;
     const SHAKE_COOLDOWN  = 900;
-    let motionActive = false, gotMotionEvent = false, gotOrientationEvent = false;
+    let motionActive=false, gotMotion=false, gotOrient=false;
 
-    function handleMotion(event) {
-      const acc = event.accelerationIncludingGravity || event.acceleration;
+    function handleMotion(ev){
+      const acc = ev.accelerationIncludingGravity || ev.acceleration;
       if (!acc) return;
-      gotMotionEvent = true;
-      const x = acc.x || 0, y = acc.y || 0, z = acc.z || 0;
+      gotMotion = true;
+      const x=acc.x||0,y=acc.y||0,z=acc.z||0;
       const mag = Math.sqrt(x*x + y*y + z*z);
-      logDebug("motion x:" + x.toFixed(2) + " y:" + y.toFixed(2) + " z:" + z.toFixed(2) + " | mag:" + mag.toFixed(2));
       const now = Date.now();
-      if (mag > SHAKE_THRESHOLD && (now - lastShake) > SHAKE_COOLDOWN) {
-        lastShake = now;
-        nextChapter();
-      }
+      if (mag > SHAKE_THRESHOLD && (now - lastShake) > SHAKE_COOLDOWN) { lastShake = now; nextChapter(); }
     }
-    function handleOrientation(e) { gotOrientationEvent = true; }
-
-    function iOSNeedsPermission() {
-      return typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function";
-    }
-
-    function attachSensors() {
+    function handleOrientation(){ gotOrient = true; }
+    function iOSNeedsPermission(){ return typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function"; }
+    function attachSensors(){
       if (motionActive) return;
-      window.addEventListener("devicemotion", handleMotion, { passive: true });
-      window.addEventListener("deviceorientation", handleOrientation, { passive: true });
-      motionActive = true;
-      hintEl.textContent = "Schütteln aktiv – oder tippen zum Blättern";
-      logDebug("Sensor listeners attached.");
+      window.addEventListener("devicemotion", handleMotion, { passive:true });
+      window.addEventListener("deviceorientation", handleOrientation, { passive:true });
+      motionActive = true; hintEl.textContent = "Schütteln aktiv – oder tippen zum Blättern";
     }
-
-    const motionOverlay = document.getElementById("motionOverlay");
-    const enableBtn = document.getElementById("enableMotionBtn");
-    const permStatus = document.getElementById("permStatus");
-    const audioStatus = document.getElementById("audioStatus");
-
-    async function enableMotion() {
-      await initAudio(); // user gesture -> unlock audio
+    async function enableMotion(){
+      await initAudio(); // Audio zugleich freischalten
       try {
         if (iOSNeedsPermission()) {
           permStatus.textContent = "Frage Berechtigung an…";
           const state = await DeviceMotionEvent.requestPermission();
-          logDebug("DeviceMotion permission: " + state);
-          if (state === "granted") {
-            attachSensors();
-            motionOverlay.classList.remove("show");
-            permStatus.textContent = "Erlaubt ✔︎";
-          } else {
-            permStatus.textContent = "Abgelehnt ✖︎ — iOS: Einstellungen → Safari → „Bewegung & Ausrichtung Zugriff“ aktivieren.";
-          }
-        } else {
-          attachSensors();
-          motionOverlay.classList.remove("show");
-          permStatus.textContent = "Ohne Abfrage aktiviert ✔︎";
-        }
-      } catch (err) {
-        logDebug("Permission error: " + err);
-        permStatus.textContent = "Fehler bei der Abfrage. Tippe „Weiter“ als Fallback.";
-      }
+          if (state === "granted") { attachSensors(); motionOverlay.classList.remove("show"); permStatus.textContent = "Erlaubt ✔︎"; }
+          else { permStatus.textContent = "Abgelehnt ✖︎ – Safari-Einstellung prüfen."; }
+        } else { attachSensors(); motionOverlay.classList.remove("show"); permStatus.textContent = "Aktiv ✔︎"; }
+      } catch(e) { permStatus.textContent = "Fehler: " + e; }
     }
 
-    document.getElementById("sensorBtn").addEventListener("click", () => {
+    enableBtn.addEventListener("click", enableMotion);
+    sensorBtn.addEventListener("click", () => {
       const s = [
-        "Audio: " + (audioCtx ? audioCtx.state : "uninit"),
-        "DeviceMotionEvent: " + ("DeviceMotionEvent" in window),
-        "requestPermission: " + (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function"),
-        "gotMotionEvent: " + gotMotionEvent,
-        "gotOrientationEvent: " + gotOrientationEvent,
+        "Audio: " + (beepEl ? "HTML5 ready" : "none"),
+        "gotMotion: " + gotMotion,
+        "gotOrientation: " + gotOrient,
         "active: " + motionActive
       ].join(" | ");
-      logDebug(s);
-      alert(s + "\n\nHinweis: iOS Safari → Einstellungen → ‚Bewegung & Ausrichtung Zugriff‘ aktivieren.");
+      alert(s);
     });
 
-    enableBtn.addEventListener("click", enableMotion);
-
+    // Init
     window.addEventListener("load", () => {
-      // prime audio on first user gesture anywhere
-      primeAudioOnFirstGesture();
+      unlockEverythingOnce();
       render();
-      if (iOSNeedsPermission()) {
-        motionOverlay.classList.add("show");
-        logDebug("iOS permission overlay angezeigt.");
-      } else { attachSensors(); }
+      if (iOSNeedsPermission()) motionOverlay.classList.add("show"); else attachSensors();
     });
-
-    document.addEventListener("visibilitychange", () => { if (!document.hidden && motionActive) attachSensors(); });
   </script>
 </body>
 </html>
+
