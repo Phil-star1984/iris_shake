@@ -30,7 +30,7 @@
     padding:18px;display:grid;grid-template-rows:auto 1fr auto;gap:10px;box-shadow:0 0 0 1px rgba(0,255,102,.05);
     transition:filter .22s ease, transform .22s ease;
   }
-  .terminal.shock{filter:brightness(1.18) contrast(1.18) saturate(1.15); transform:scale(1.01)}
+  .terminal.shock{filter:brightness(1.2) contrast(1.2) saturate(1.18); transform:scale(1.012)}
   .chapter-row{display:flex;gap:8px;align-items:center;color:var(--fg-dim)}
   .led{width:8px;height:8px;border-radius:50%;background:var(--fg);box-shadow:0 0 6px var(--fg)}
   .chapter{font-size:clamp(18px,4.5vw,22px)}
@@ -62,15 +62,15 @@
 
   /* Starker visueller Effekt: Aperture-Flash + Scanlines + kurzer Shake */
   .fx{position:fixed;inset:0;pointer-events:none;opacity:0;z-index:998}
-  .fx.show{animation:flash 480ms ease-out}
+  .fx.show{animation:flash 520ms ease-out}
   @keyframes flash{
-    0%{opacity:.0}
-    8%{opacity:.95; background:
-        radial-gradient(circle at 50% 50%, rgba(0,255,102,.35) 0%, rgba(0,255,102,.12) 20%, transparent 45%),
-        repeating-linear-gradient(to bottom, rgba(0,255,102,.18) 0 2px, transparent 2px 4px)}
-    40%{opacity:.35; background:
-        radial-gradient(ellipse at 50% 50%, rgba(0,255,102,.18) 0%, transparent 55%),
-        repeating-linear-gradient(to bottom, rgba(0,255,102,.12) 0 2px, transparent 2px 5px)}
+    0%{opacity:0}
+    7%{opacity:.95; background:
+        radial-gradient(circle at 50% 50%, rgba(0,255,102,.4) 0%, rgba(0,255,102,.14) 22%, transparent 48%),
+        repeating-linear-gradient(to bottom, rgba(0,255,102,.22) 0 2px, transparent 2px 5px)}
+    45%{opacity:.35; background:
+        radial-gradient(ellipse at 50% 50%, rgba(0,255,102,.2) 0%, transparent 60%),
+        repeating-linear-gradient(to bottom, rgba(0,255,102,.14) 0 2px, transparent 2px 6px)}
     100%{opacity:0}
   }
 </style>
@@ -114,22 +114,22 @@
 <script>
 "use strict";
 
-/* ---------- Story: kohärent & IRIS-konform (länger) ---------- */
+/* ---------- Story: kohärent & IRIS-konform (mittel-lang, smartphone-tauglich) ---------- */
 const chapters = [
   "U-Bahn, Neon. Phil Splash skizziert die Frau gegenüber – ruhig, unerreichbar. Niemand sieht hin; alle starren auf Hologramme. In ihm wächst die Entscheidung: Wenn die Welt nur noch auf Screens reagiert, muss Kunst sie dort berühren.",
-  "Regen, Reklamen, Spiegelglas. Seine Farben wirken stumpf. Phil erinnert sich an Nächte, in denen echte Menschen vor echten Bildern standen. Er will Kunst und Code koppeln – nicht um zu fliehen, sondern um die Stadt wieder fühlbar zu machen.",
+  "Regen, Reklamen, spiegelndes Glas. Seine Farben wirken stumpf. Phil erinnert sich an Nächte, in denen echte Menschen vor echten Bildern standen. Er will Kunst und Code koppeln – nicht um zu fliehen, sondern um die Stadt wieder fühlbar zu machen.",
   "Co-Working-Keller. Lana – präzise, schweigsam – blättert in seinen Skizzen. Neben Lötstationen: ein eingeritztes Symbol, uralt. „BEFORE THE STARS.“ Lana sagt nichts. „Bauen wir’s“, sagt sie dann.",
-  "IRIS entsteht: eine leichte Krone, die Muster im Gehirn in Bilder gießt. „Wie ein drittes Auge.“ Test-Log: ›it remembers‹ – eingetragen von keinem aus dem Team. Phil friert kurz, arbeitet weiter.",
+  "IRIS entsteht: eine leichte Krone, die Muster im Gehirn in Bilder gießt. „Wie ein drittes Auge.“ Test-Log: ›it remembers‹ – eingetragen von niemandem. Phil friert kurz, arbeitet weiter.",
   "Selbsttest. Synästhesie: Töne schmecken nach Minze, Blau riecht nach Ozon. Zwischen den Farben schimmert ein Schatten – alt, geduldig, neugierig. Phil blinzelt ihn weg. IRIS funktioniert. Vielleicht zu gut.",
-  "Erste Sessions. Ein stotternder Rapper flutet den Raum mit flüssigem Flow. Eine gelähmte Malerin bewegt sich im VR-Körper. Hoffnung. Parallel warnt RATT, eine Hackergruppe: „IRIS trägt vorzeitliche Muster. Es ist nicht nur euer Code.“",
+  "Erste Sessions. Ein stotternder Rapper flutet den Raum mit flüssigem Flow. Eine gelähmte Malerin bewegt sich im VR-Körper. Hoffnung. Parallel warnt RATT: „IRIS trägt vorzeitliche Muster. Es ist nicht nur euer Code.“",
   "Vorn – der unsichtbare Milliardär – bietet Labs und Geld, fordert Exklusivität. Lana bleibt kühl: „Nur live – vor allen.“ Phil nickt. Als sie gehen, wirkt das eingeritzte Symbol an der Tür … frischer.",
-  "Generalprobe mit Nora, Lanas Vertrauter. „Du denkst, ich zeichne“, flüstert Phil. Nora lacht und setzt die Krone auf. Das Bild wächst wie ein Tor, pulsierend. In der Tiefe lungert etwas, das keinen Namen hat – und sie anschaut.",
-  "Bühne. Weltstream. Nora malt mit Licht, das Publikum erstarrt. Dann dreht sie sich zu Phil und spricht in einer Sprache, die zeitlos klingt: „Es hat dich gefunden.“ Ihr Körper knickt ein; der Stream reißt ab.",
+  "Generalprobe mit Nora, Lanas Vertrauter. „Du denkst, ich zeichne“, flüstert Phil. Nora lächelt, setzt die Krone auf. Das Bild wächst wie ein Tor. In der Tiefe lungert etwas, das keinen Namen hat – und sie anschaut.",
+  "Bühne. Weltstream. Nora malt mit Licht; das Publikum erstarrt. Dann dreht sie sich zu Phil und spricht in einer zeitlosen Sprache: „Es hat dich gefunden.“ Ihr Körper knickt ein; der Stream reißt ab.",
   "Sirenen. Auf der Leinwand flackern Sternkarten, die niemals existierten. In Phils Kopfhörer murmelt eine Kindheit, die er nie hatte. Lana zieht ihn weg. „Kein Unfall“, sagt sie. „Etwas hat durch IRIS geantwortet.“",
-  "RATT leakt Daten: Schleifen kurz vor Noras Kollaps, als hätte IRIS etwas durchgelassen. Dokumente zeigen Vorns Firma mit Fragmenten eines Signals – datiert „vor dem ersten Stern“. Zwischen den Zeilen: Code von Phil – signiert in einer Zukunft, die nicht passiert ist.",
-  "Allein im Studio. Der Spiegel spricht zuerst: „Du hast IRIS gemacht? IRIS hat dich rekonstruiert.“ Phil erinnert sich, warum er die Frau immer wieder zeichnet: Sie ist das Echo seiner Entscheidung, hierher zurückzukehren.",
-  "Er setzt IRIS ohne Sicherungen auf. Sturz nach innen: U-Bahn-Bilder in endlosen Rahmen. Am Ende ein Raum aus Licht. Die Frau steht dort – und ist nicht ganz Mensch. „Du kommst immer hierher, wenn die Schleife brennt.“",
-  "Die Wahrheit ist ein Knoten: IRIS ist kein Werkzeug, sondern ein Schlüssel. Dahinter liegt etwas Älteres als Zeit; Vorn will es einfassen, RATT will es begrenzen. „Wähl diesmal anders“, sagt die Frau. „Sonst wiederholt sich alles – mit schöneren Bildern.“",
+  "RATT leakt Daten: Schleifen kurz vor Noras Kollaps, als hätte IRIS etwas durchgelassen. Dokumente zeigen Vorns Firma mit Fragmenten eines Signals – datiert „vor dem ersten Stern“. Dazwischen Code von Phil – signiert in einer Zukunft, die nicht passiert ist.",
+  "Allein im Studio. Der Spiegel spricht zuerst: „Du hast IRIS gemacht? IRIS hat dich rekonstruiert.“ Phil begreift, warum er die Frau immer wieder zeichnet: Sie ist das Echo seiner Entscheidung, hierher zurückzukehren.",
+  "IRIS ohne Sicherungen. Sturz nach innen: U-Bahn-Bilder in endlosen Rahmen. Am Ende ein Raum aus Licht. Die Frau steht dort – nicht ganz Mensch. „Du kommst immer hierher, wenn die Schleife brennt.“",
+  "Die Wahrheit ist ein Knoten: IRIS ist ein Schlüssel. Dahinter liegt etwas Älteres als Zeit; Vorn will es einfassen, RATT es begrenzen. „Wähl diesmal anders“, sagt die Frau. „Sonst wiederholt sich alles – nur schöner.“",
   "U-Bahn, Neon – wieder Anfang. Die Frau gegenüber. In ihrem Auge glimmt eine dünne IRIS-Kontur. „Noch einmal?“, fragt sie. Phil nickt: „Noch einmal – aber nicht im Dunkeln.“ Draußen wird es minimal heller."
 ];
 const total = chapters.length;
@@ -176,61 +176,100 @@ function render(){
   setTimeout(()=>{ textEl.textContent=""; setCardAnimation("enter"); typeText(textEl, chapters[index]); }, 140);
 }
 
-/* ---------- Audio: futuristischer, sphärischer Chord-FX ---------- */
+/* ---------- Audio: LAUTER, FUTURISTISCH, iOS-STABIL ---------- */
 let audioCtx=null, audioReady=false;
-function ensureAudio(){ try{
-  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-  if(audioCtx.state==="suspended") audioCtx.resume();
-  audioReady = (audioCtx.state==="running");
-  diagEl.textContent = audioReady ? "Audio bereit" : "Audio gesperrt";
-}catch{} }
-/* Pad-Chord (harmonisch, weich), startet sofort */
-function playFX(direction="next"){
+
+// 1) HTMLAudio-Fallback: wir generieren zwei WAVs (Next/Prev) on-the-fly (sehr stabil auf iOS)
+const sfxNext = new Audio(); sfxNext.setAttribute("playsinline","");
+const sfxPrev = new Audio(); sfxPrev.setAttribute("playsinline","");
+
+function makeWavPad(freqs=[440,523.25,659.25], durMs=750){
+  const sr=44100, N=Math.floor(sr*(durMs/1000));
+  const buf=new Uint8Array(44+N*2);
+  const w16=(o,v)=>{buf[o]=v&255; buf[o+1]=(v>>8)&255}, w32=(o,v)=>{buf[o]=v&255; buf[o+1]=(v>>8)&255; buf[o+2]=(v>>16)&255; buf[o+3]=(v>>24)&255};
+  // Header
+  buf.set([82,73,70,70]); w32(4,36+N*2); buf.set([87,65,86,69],8); buf.set([102,109,116,32],12); w32(16,16);
+  w16(20,1); w16(22,1); w32(24,sr); w32(28,sr*2); w16(32,2); w16(34,16); buf.set([100,97,116,97],36); w32(40,N*2);
+  // Synth: 3-Stimmen-Pad + leichter Shimmer (Oktave) + sanfte Hüllkurve
+  const baseGain=0.35; const shimmerGain=0.16;
+  for(let i=0;i<N;i++){
+    const t=i/sr;
+    // ADSR
+    const A=Math.min(1, t/0.02);               // Attack 20ms
+    const R=Math.min(1, (N-i)/(sr*0.08));      // Release 80ms
+    const env=A*R;
+    let s=0;
+    for(let k=0;k<freqs.length;k++){
+      const f=freqs[k];
+      // leichte Verstimmung + weiches Vibrato
+      const vibr=Math.sin(2*Math.PI*5.2*t)*0.008; // ~8cents
+      s+= Math.sin(2*Math.PI*(f*(1+vibr))*t);
+      s+= 0.6*Math.sin(2*Math.PI*((f*2)*(1+vibr))*t); // Obertöne
+    }
+    // Shimmer (Oktave nach oben, leiser)
+    const f0=freqs[0]*2;
+    s+= shimmerGain*Math.sin(2*Math.PI*(f0)*t);
+    // normalisieren & Hüllkurve
+    s = (s/ (freqs.length*1.6)) * baseGain * env;
+    const v = Math.max(-1, Math.min(1, s));
+    const int = (v*32767)|0;
+    w16(44+i*2,int);
+  }
+  return "data:audio/wav;base64,"+btoa(String.fromCharCode.apply(null,buf));
+}
+sfxNext.src = makeWavPad([440,523.25,659.25], 780);   // A-moll-Pad (heller)
+sfxPrev.src = makeWavPad([392.00,466.16,587.33], 780); // G-moll-Pad (dunkler)
+
+// 2) WebAudio-Layer (breiter, wenn verfügbar)
+function ensureAudio(){
+  try{
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended") audioCtx.resume();
+    audioReady=(audioCtx.state==="running");
+    diagEl.textContent = audioReady ? "Audio bereit" : "Audio gesperrt";
+  }catch(e){}
+}
+// sofort beim ersten Pointer-Tap freischalten
+document.addEventListener("pointerdown", function once(){
+  ensureAudio();
+  try{ sfxNext.play().then(()=>{sfxNext.pause(); sfxNext.currentTime=0;}).catch(()=>{});}catch{}
+  try{ sfxPrev.play().then(()=>{sfxPrev.pause(); sfxPrev.currentTime=0;}).catch(()=>{});}catch{}
+  document.removeEventListener("pointerdown", once);
+},{passive:true});
+
+// WebAudio-Pad (Layer über HTMLAudio, lauter & breiter)
+function playWebAudioPad(dir="next"){
   if(!audioReady) return;
-  const ctx=audioCtx, now=ctx.currentTime;
-  const dur = 0.72; // etwas länger, sphärisch
-  // Akkorde: Next = A-moll (A4, C5, E5); Prev = G-moll (G4, Bb4, D5)
-  const notes = direction==="prev" ? [392.00, 466.16, 587.33] : [440.00, 523.25, 659.25];
+  const ctx=audioCtx, now=ctx.currentTime, dur=0.75;
+  const notes = dir==="prev" ? [392.00, 466.16, 587.33] : [440.00, 523.25, 659.25];
 
-  // Reverb-ähnlicher Feedback-Delay mit Lowpass im Loop
-  const delay = ctx.createDelay(1.0); delay.delayTime.value = 0.22;
-  const lp    = ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value = 1800;
-  const fb    = ctx.createGain(); fb.gain.value = 0.28;
+  const master = ctx.createGain(); master.gain.setValueAtTime(0.0001, now);
+  master.gain.exponentialRampToValueAtTime(0.36, now+0.02);
+  master.gain.exponentialRampToValueAtTime(0.0001, now+dur);
+  master.connect(ctx.destination);
+
+  // mildes Delay + Lowpass im Feedback
+  const delay = ctx.createDelay(1.0); delay.delayTime.value = 0.23;
+  const lp    = ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value = 2400;
+  const fb    = ctx.createGain(); fb.gain.value = 0.32;
   delay.connect(lp); lp.connect(fb); fb.connect(delay);
-
-  const master = ctx.createGain(); master.gain.value=0.0001;
   delay.connect(master);
 
-  // sanfter Stereo-Spread
-  const merger = ctx.createChannelMerger(2);
-  master.connect(merger);
-  merger.connect(ctx.destination);
-
-  // Hüllkurve
-  master.gain.setValueAtTime(0.0001, now);
-  master.gain.exponentialRampToValueAtTime(0.26, now+0.03);
-  master.gain.exponentialRampToValueAtTime(0.0001, now+dur);
-
-  notes.forEach((f, i)=>{
+  notes.forEach((f,i)=>{
     const o1=ctx.createOscillator(), o2=ctx.createOscillator();
-    const g =ctx.createGain();
-    const p =ctx.createStereoPanner();
-    const fl=ctx.createBiquadFilter();
-
+    const g =ctx.createGain(), p =ctx.createStereoPanner(), fl=ctx.createBiquadFilter();
     o1.type="sine"; o2.type="triangle";
     o1.frequency.setValueAtTime(f, now);
     o2.frequency.setValueAtTime(f, now);
-    o2.detune.setValueAtTime((i-1)*6, now); // leichte Verstimmung
+    o2.detune.setValueAtTime((i-1)*8, now); // Detune
+    // Vibrato
+    const lfo=ctx.createOscillator(), lfoG=ctx.createGain();
+    lfo.frequency.value=5.0; lfoG.gain.value=3.5;
+    lfo.connect(lfoG); lfoG.connect(o1.frequency);
 
-    // sanfter Vibrato-LFO
-    const lfo=ctx.createOscillator(), lfoGain=ctx.createGain();
-    lfo.frequency.value=5.2; lfoGain.gain.value=3; // ~3 Cent
-    lfo.connect(lfoGain); lfoGain.connect(o1.frequency);
-
-    // Filter weich
-    fl.type="lowpass"; fl.frequency.setValueAtTime(4200-(i*700), now);
-    g.gain.value=0.28 - i*0.04; // obere Stimmen leiser
-    p.pan.value = (i-1)*0.35;
+    fl.type="lowpass"; fl.frequency.setValueAtTime(4800-(i*800), now);
+    g.gain.value=0.36 - i*0.06;
+    p.pan.value=(i-1)*0.4;
 
     o1.connect(g); o2.connect(g); g.connect(fl); fl.connect(delay);
     o1.start(now); o2.start(now); lfo.start(now);
@@ -238,31 +277,37 @@ function playFX(direction="next"){
   });
 }
 
-/* Audio beim ersten Pointer-Tap freischalten (iOS) */
-document.addEventListener("pointerdown", function once(){
-  ensureAudio();
-  document.removeEventListener("pointerdown", once);
-},{passive:true});
+// Gemeinsamer Trigger: HTMLAudio (sicher) + WebAudio (reich)
+function playFX(dir="next"){
+  // zuerst HTMLAudio (sofort & iOS-sicher), dann WebAudio-Layer
+  try{
+    const el = (dir==="prev") ? sfxPrev : sfxNext;
+    el.currentTime = 0; el.volume = 1.0; el.play().catch(()=>{});
+  }catch{}
+  playWebAudioPad(dir);
+}
 
 /* ---------- Visuelle FX ---------- */
 function pulseFX(){
   // Aperture-Flash
   fxEl.classList.remove("show"); void fxEl.offsetWidth; fxEl.classList.add("show");
-  // kurzer Terminal-Shock
+  // Terminal-Schock
   terminalEl.classList.add("shock");
-  setTimeout(()=>terminalEl.classList.remove("shock"), 220);
+  setTimeout(()=>terminalEl.classList.remove("shock"), 240);
 }
 
 /* ---------- Navigation ---------- */
 function nextChapter(){
   if(isTyping){ if(typingTimer) clearTimeout(typingTimer); textEl.textContent=chapters[index]; isTyping=false; textEl.classList.remove("caret"); return; }
-  index=(index+1)%total; playFX("next"); pulseFX(); render();
+  ensureAudio(); playFX("next"); pulseFX();
+  index=(index+1)%total; render();
 }
 function prevChapter(){
   if(isTyping){ if(typingTimer) clearTimeout(typingTimer); textEl.textContent=chapters[index]; isTyping=false; textEl.classList.remove("caret"); return; }
-  index=(index-1+total)%total; playFX("prev"); pulseFX(); render();
+  ensureAudio(); playFX("prev"); pulseFX();
+  index=(index-1+total)%total; render();
 }
-function resetStory(){ index=0; playFX("next"); pulseFX(); render(); }
+function resetStory(){ ensureAudio(); playFX("next"); pulseFX(); index=0; render(); }
 
 document.querySelector("main").addEventListener("click", nextChapter);
 nextBtn.addEventListener("click", nextChapter);
@@ -284,9 +329,10 @@ function handleMotion(ev){
 }
 function attachSensors(){ if(motionActive) return; window.addEventListener("devicemotion",handleMotion,{passive:true}); motionActive=true; hintEl.textContent="Schütteln aktiv – oder tippen"; }
 function iOSNeedsPermission(){ return typeof DeviceMotionEvent!=="undefined" && typeof DeviceMotionEvent.requestPermission==="function"; }
-/* Permission-Call ohne await, direkt in der Geste */
+// Permission-Call ohne await, direkt in der Geste (+ Audio-Prime)
 function requestMotionPermission(){
-  ensureAudio(); // nichts awaiten → bleibt in derselben Geste
+  ensureAudio();
+  try{ sfxNext.play().then(()=>{sfxNext.pause(); sfxNext.currentTime=0;}).catch(()=>{});}catch{}
   if(iOSNeedsPermission()){
     DeviceMotionEvent.requestPermission().then(state=>{
       if(state==="granted"){ attachSensors(); motionOverlay.classList.remove("show"); permStatus.textContent="Erlaubt ✔︎"; }
@@ -294,14 +340,12 @@ function requestMotionPermission(){
     }).catch(err=>{ permStatus.textContent="Fehler: "+err; });
   } else { attachSensors(); motionOverlay.classList.remove("show"); permStatus.textContent="Aktiv ✔︎"; }
 }
-enableBtn.addEventListener("click", requestMotionPermission, {passive:true});
-enableBtn.addEventListener("touchend", requestMotionPermission, {passive:true});
+document.getElementById("enableMotionBtn").addEventListener("click", requestMotionPermission, {passive:true});
+document.getElementById("enableMotionBtn").addEventListener("touchend", requestMotionPermission, {passive:true});
 
 /* ---------- Init ---------- */
-window.addEventListener("load", ()=>{
-  try{ render(); }catch(e){ diagEl.textContent="Render-Fehler: "+e; }
-  if(iOSNeedsPermission()) motionOverlay.classList.add("show"); else attachSensors();
-});
+function renderInit(){ try{ render(); }catch(e){ diagEl.textContent="Render-Fehler: "+e; } }
+window.addEventListener("load", ()=>{ renderInit(); if(iOSNeedsPermission()) motionOverlay.classList.add("show"); else attachSensors(); });
 </script>
 </body>
 </html>
