@@ -6,72 +6,76 @@
 <meta name="theme-color" content="#000000" />
 <title>IRIS — Shake to Read (CLI)</title>
 <style>
-  :root{
-    --bg:#000;               /* pures Schwarz */
-    --fg:#00ff66;            /* klassisches CLI-Grün */
-    --fg-dim:#00cc52;        /* gedimmt */
-    --border:#005e2f;
-    --glow:0 0 10px rgba(0,255,102,.25);
-  }
+  :root{ --bg:#000; --fg:#00ff66; --fg-dim:#00cc52; --border:#005e2f; --glow:0 0 10px rgba(0,255,102,.25); }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0;background:var(--bg);color:var(--fg);
+    margin:0; background:var(--bg); color:var(--fg);
     font-family:"DejaVu Sans Mono","Ubuntu Mono","Liberation Mono","SFMono-Regular",Menlo,Monaco,Consolas,"Courier New",monospace;
     -webkit-font-smoothing:antialiased; text-shadow:var(--glow);
     line-height:1.65; overflow:hidden;
   }
-  .frame{height:100%;display:grid;grid-template-rows:auto 1fr auto;gap:12px;
-    padding:calc(env(safe-area-inset-top)+12px) 14px calc(env(safe-area-inset-bottom)+14px)}
-  header{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--fg-dim)}
-  .brand::before{content:"root@iris:~$ ";color:var(--fg-dim)}
+  .frame{height:100%; display:grid; grid-template-rows:auto 1fr auto; gap:12px;
+         padding:calc(env(safe-area-inset-top)+12px) 14px calc(env(safe-area-inset-bottom)+14px)}
+  header{display:flex; justify-content:space-between; align-items:center; font-size:14px; color:var(--fg-dim)}
+  .brand::before{content:"root@iris:~$ "; color:var(--fg-dim)}
   .terminal{
-    border:1px solid var(--border);border-radius:10px;background:#000;
-    padding:18px;display:grid;grid-template-rows:auto 1fr auto;gap:10px;box-shadow:0 0 0 1px rgba(0,255,102,.05);
-    transition:filter .22s ease, transform .22s ease;
+    border:1px solid var(--border); border-radius:10px; background:#000;
+    padding:18px; display:grid; grid-template-rows:auto 1fr auto; gap:10px;
+    box-shadow:0 0 0 1px rgba(0,255,102,.05);
+    transition:filter .2s ease, transform .2s ease;
   }
-  .terminal.shock{filter:brightness(1.2) contrast(1.2) saturate(1.18); transform:scale(1.012)}
-  .chapter-row{display:flex;gap:8px;align-items:center;color:var(--fg-dim)}
-  .led{width:8px;height:8px;border-radius:50%;background:var(--fg);box-shadow:0 0 6px var(--fg)}
+  .chapter-row{display:flex; gap:8px; align-items:center; color:var(--fg-dim)}
+  .led{width:8px; height:8px; border-radius:50%; background:var(--fg); box-shadow:0 0 6px var(--fg)}
   .chapter{font-size:clamp(18px,4.5vw,22px)}
-  .card{min-height:52vh;display:flex;align-items:center}
+  .card{min-height:52vh; display:flex; align-items:center}
   .text{font-size:clamp(18px,5.2vw,24px)}
-  .caret::after{content:"▌";margin-left:2px;animation:blink 1s steps(1,end) infinite}
+  .caret::after{content:"▌"; margin-left:2px; animation:blink 1s steps(1,end) infinite}
   @keyframes blink{50%{opacity:0}}
   .enter{animation:enter .44s cubic-bezier(.2,.8,.16,1) both}
   .exit{animation:exit .26s cubic-bezier(.55,.08,.68,.53) both}
-  @keyframes enter{from{opacity:0;transform:translateY(10vh)}to{opacity:1;transform:translateY(0)}}
-  @keyframes exit{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-7vh)}}
-
-  footer{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px}
-  .hint{font-size:12.5px;color:var(--fg-dim)}
-  .controls{display:flex;gap:8px;flex-wrap:wrap}
+  @keyframes enter{from{opacity:0; transform:translateY(10vh)} to{opacity:1; transform:translateY(0)}}
+  @keyframes exit{from{opacity:1; transform:translateY(0)} to{opacity:0; transform:translateY(-7vh)}}
+  footer{display:grid; grid-template-columns:1fr auto; align-items:center; gap:8px}
+  .hint{font-size:12.5px; color:var(--fg-dim)}
+  .controls{display:flex; gap:8px; flex-wrap:wrap}
   button{
-    background:#000;border:1px solid var(--border);color:var(--fg);
-    padding:10px 14px;border-radius:8px;font-size:14px;cursor:pointer;touch-action:manipulation;box-shadow:var(--glow)
+    background:#000; border:1px solid var(--border); color:var(--fg);
+    padding:10px 14px; border-radius:8px; font-size:14px; cursor:pointer; touch-action:manipulation; box-shadow:var(--glow)
   }
   button:hover{border-color:#00994d}
   .primary{border-color:#00cc66}
-  .danger{border-color:#663333;color:#ffb3b3;text-shadow:none}
+  .danger{border-color:#663333; color:#ffb3b3; text-shadow:none}
 
-  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;padding:24px;z-index:999}
+  /* Motion overlay */
+  .overlay{position:fixed; inset:0; background:rgba(0,0,0,.92); display:none; align-items:center; justify-content:center; padding:24px; z-index:999}
   .overlay.show{display:flex}
-  .card-modal{max-width:520px;background:#000;border:1px solid var(--border);border-radius:12px;padding:22px;text-align:center;box-shadow:var(--glow)}
+  .card-modal{max-width:520px; background:#000; border:1px solid var(--border); border-radius:12px; padding:22px; text-align:center; box-shadow:var(--glow)}
   .card-modal h2{margin:0 0 10px}
-  .status{font-size:12px;color:var(--fg-dim);margin-top:6px}
+  .status{font-size:12px; color:var(--fg-dim); margin-top:6px}
 
-  /* Starker visueller Effekt: Aperture-Flash + Scanlines + kurzer Shake */
-  .fx{position:fixed;inset:0;pointer-events:none;opacity:0;z-index:998}
-  .fx.show{animation:flash 520ms ease-out}
+  /* 💥 MAX visueller Effekt beim Shake-Wechsel */
+  .fx{position:fixed; inset:0; pointer-events:none; opacity:0; z-index:998}
+  .fx.show{animation:flash 580ms ease-out}
   @keyframes flash{
     0%{opacity:0}
-    7%{opacity:.95; background:
-        radial-gradient(circle at 50% 50%, rgba(0,255,102,.4) 0%, rgba(0,255,102,.14) 22%, transparent 48%),
-        repeating-linear-gradient(to bottom, rgba(0,255,102,.22) 0 2px, transparent 2px 5px)}
-    45%{opacity:.35; background:
-        radial-gradient(ellipse at 50% 50%, rgba(0,255,102,.2) 0%, transparent 60%),
-        repeating-linear-gradient(to bottom, rgba(0,255,102,.14) 0 2px, transparent 2px 6px)}
+    6%{opacity:1; backdrop-filter:brightness(1.4) contrast(1.3) saturate(1.4);
+        background:
+          radial-gradient(circle at 50% 50%, rgba(0,255,102,.45) 0%, rgba(0,255,102,.18) 24%, transparent 50%),
+          repeating-linear-gradient(to bottom, rgba(0,255,102,.25) 0 2px, transparent 2px 6px);}
+    40%{opacity:.45; backdrop-filter:brightness(1.2) contrast(1.15);
+        background:
+          radial-gradient(ellipse at 50% 50%, rgba(0,255,102,.22) 0%, transparent 62%),
+          repeating-linear-gradient(to bottom, rgba(0,255,102,.16) 0 2px, transparent 2px 7px);}
     100%{opacity:0}
+  }
+  .quake{animation:quake .32s cubic-bezier(.25,.8,.25,1)}
+  @keyframes quake{
+    0%  {transform:translate3d(0,0,0) rotate(0deg)}
+    25% {transform:translate3d(3px,-2px,0) rotate(-0.2deg)}
+    50% {transform:translate3d(-3px,2px,0) rotate(0.2deg)}
+    75% {transform:translate3d(2px,-1px,0) rotate(-0.15deg)}
+    100%{transform:translate3d(0,0,0) rotate(0deg)}
   }
 </style>
 </head>
@@ -91,8 +95,6 @@
         <button id="prevBtn">Zurück</button>
         <button id="nextBtn" class="primary">Weiter</button>
         <button id="resetBtn" class="danger">Reset</button>
-        <button id="soundBtn">Audio</button>
-        <button id="sensorBtn">Sensor</button>
       </div>
     </footer>
   </div>
@@ -114,7 +116,7 @@
 <script>
 "use strict";
 
-/* ---------- Story: kohärent & IRIS-konform (mittel-lang, smartphone-tauglich) ---------- */
+/* ---------- Story (kohärent & IRIS-konform) ---------- */
 const chapters = [
   "U-Bahn, Neon. Phil Splash skizziert die Frau gegenüber – ruhig, unerreichbar. Niemand sieht hin; alle starren auf Hologramme. In ihm wächst die Entscheidung: Wenn die Welt nur noch auf Screens reagiert, muss Kunst sie dort berühren.",
   "Regen, Reklamen, spiegelndes Glas. Seine Farben wirken stumpf. Phil erinnert sich an Nächte, in denen echte Menschen vor echten Bildern standen. Er will Kunst und Code koppeln – nicht um zu fliehen, sondern um die Stadt wieder fühlbar zu machen.",
@@ -135,7 +137,7 @@ const chapters = [
 const total = chapters.length;
 let index = +(localStorage.getItem("iris:index")||0) || 0;
 
-/* ---------- Elements ---------- */
+/* ---------- DOM ---------- */
 const titleEl   = document.getElementById("chapterTitle");
 const textEl    = document.getElementById("chapterText");
 const progressEl= document.getElementById("progress");
@@ -143,13 +145,9 @@ const hintEl    = document.getElementById("hint");
 const diagEl    = document.getElementById("diag");
 const terminalEl= document.getElementById("terminal");
 const fxEl      = document.getElementById("fx");
-
 const prevBtn   = document.getElementById("prevBtn");
 const nextBtn   = document.getElementById("nextBtn");
 const resetBtn  = document.getElementById("resetBtn");
-const soundBtn  = document.getElementById("soundBtn");
-const sensorBtn = document.getElementById("sensorBtn");
-
 const motionOverlay = document.getElementById("motionOverlay");
 const enableBtn = document.getElementById("enableMotionBtn");
 const permStatus= document.getElementById("permStatus");
@@ -176,146 +174,94 @@ function render(){
   setTimeout(()=>{ textEl.textContent=""; setCardAnimation("enter"); typeText(textEl, chapters[index]); }, 140);
 }
 
-/* ---------- Audio: LAUTER, FUTURISTISCH, iOS-STABIL ---------- */
-let audioCtx=null, audioReady=false;
+/* ---------- STARKER visueller Effekt ---------- */
+function pulseFX(){
+  // großer Overlay-Flash
+  fxEl.classList.remove("show"); void fxEl.offsetWidth; fxEl.classList.add("show");
+  // hartes Wackeln des Terminals
+  terminalEl.classList.remove("quake"); void terminalEl.offsetWidth; terminalEl.classList.add("quake");
+}
 
-// 1) HTMLAudio-Fallback: wir generieren zwei WAVs (Next/Prev) on-the-fly (sehr stabil auf iOS)
-const sfxNext = new Audio(); sfxNext.setAttribute("playsinline","");
-const sfxPrev = new Audio(); sfxPrev.setAttribute("playsinline","");
+/* ---------- LAUTER futuristischer Sound (iOS-stabil, 1 Datei) ---------- */
+const sfx = new Audio(); sfx.setAttribute("playsinline","");
+sfx.volume = 1.0; // laut
+sfx.src = makeFuturisticWav(); // generierter WAV-Data-URI
 
-function makeWavPad(freqs=[440,523.25,659.25], durMs=750){
-  const sr=44100, N=Math.floor(sr*(durMs/1000));
+// iOS: Audio bei erster Berührung & beim Erlauben-Button „primen“
+document.addEventListener("pointerdown", function once(){
+  primeAudio(); document.removeEventListener("pointerdown", once);
+},{passive:true});
+function primeAudio(){
+  try{ sfx.play().then(()=>{ sfx.pause(); sfx.currentTime=0; }).catch(()=>{});}catch{}
+}
+function playSound(){
+  try{ sfx.currentTime = 0; sfx.volume = 1.0; sfx.play().catch(()=>{}); }catch{}
+}
+
+// Synthese: spherischer, moderner Pad/Whoosh-Hybrid (~0.9s), clean & harmonisch
+function makeFuturisticWav(){
+  const sr=44100, dur=0.9, N=Math.floor(sr*dur);
   const buf=new Uint8Array(44+N*2);
   const w16=(o,v)=>{buf[o]=v&255; buf[o+1]=(v>>8)&255}, w32=(o,v)=>{buf[o]=v&255; buf[o+1]=(v>>8)&255; buf[o+2]=(v>>16)&255; buf[o+3]=(v>>24)&255};
-  // Header
+  // WAV Header
   buf.set([82,73,70,70]); w32(4,36+N*2); buf.set([87,65,86,69],8); buf.set([102,109,116,32],12); w32(16,16);
   w16(20,1); w16(22,1); w32(24,sr); w32(28,sr*2); w16(32,2); w16(34,16); buf.set([100,97,116,97],36); w32(40,N*2);
-  // Synth: 3-Stimmen-Pad + leichter Shimmer (Oktave) + sanfte Hüllkurve
-  const baseGain=0.35; const shimmerGain=0.16;
+
+  const chord = [440.00, 554.37, 659.25]; // A Major add9-ish (hell, futuristisch)
   for(let i=0;i<N;i++){
     const t=i/sr;
-    // ADSR
-    const A=Math.min(1, t/0.02);               // Attack 20ms
-    const R=Math.min(1, (N-i)/(sr*0.08));      // Release 80ms
-    const env=A*R;
+    // sanfter Attack + Release
+    const A=0.015, R=0.12;
+    const envA=Math.min(1,t/A), envR=Math.min(1,(dur-t)/R);
+    const env=Math.max(0, envA*envR);
+
+    // gleitender Pitch-Rise (Granular Whoosh)
+    const rise = 1 + 0.08*Math.min(1, t/0.5);
+
+    // Summe aus Sine + Triangle + feinem Shimmer (Oktave)
     let s=0;
-    for(let k=0;k<freqs.length;k++){
-      const f=freqs[k];
-      // leichte Verstimmung + weiches Vibrato
-      const vibr=Math.sin(2*Math.PI*5.2*t)*0.008; // ~8cents
-      s+= Math.sin(2*Math.PI*(f*(1+vibr))*t);
-      s+= 0.6*Math.sin(2*Math.PI*((f*2)*(1+vibr))*t); // Obertöne
+    for(let k=0;k<chord.length;k++){
+      const f=chord[k]*rise;
+      const vibr = Math.sin(2*Math.PI*5.2*t)*0.006;
+      s += Math.sin(2*Math.PI*(f*(1+vibr))*t) * (0.95 - k*0.15);
+      s += 0.35*Math.sin(2*Math.PI*(2*f)*t) * (0.7 - k*0.15);
     }
-    // Shimmer (Oktave nach oben, leiser)
-    const f0=freqs[0]*2;
-    s+= shimmerGain*Math.sin(2*Math.PI*(f0)*t);
-    // normalisieren & Hüllkurve
-    s = (s/ (freqs.length*1.6)) * baseGain * env;
-    const v = Math.max(-1, Math.min(1, s));
-    const int = (v*32767)|0;
-    w16(44+i*2,int);
+    // Shimmer + dezenter Air-Noise (höhere „Luftigkeit“)
+    const shimmer = 0.22*Math.sin(2*Math.PI*(chord[0]*2.01)*t);
+    const air = (Math.sin(2*Math.PI*990*t)+Math.sin(2*Math.PI*1180*t*1.01))/6;
+
+    // sanftes Lowpass „bewegend“
+    const lp = 0.5 + 0.5*Math.sin(2*Math.PI*0.7*t);
+    let out = ((s/1.9)+shimmer+air) * env * (0.85*lp + 0.15);
+
+    // hart genug, aber nicht clippen
+    out = Math.max(-1, Math.min(1, out));
+    w16(44+i*2, (out*32767)|0);
   }
   return "data:audio/wav;base64,"+btoa(String.fromCharCode.apply(null,buf));
 }
-sfxNext.src = makeWavPad([440,523.25,659.25], 780);   // A-moll-Pad (heller)
-sfxPrev.src = makeWavPad([392.00,466.16,587.33], 780); // G-moll-Pad (dunkler)
-
-// 2) WebAudio-Layer (breiter, wenn verfügbar)
-function ensureAudio(){
-  try{
-    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-    if(audioCtx.state==="suspended") audioCtx.resume();
-    audioReady=(audioCtx.state==="running");
-    diagEl.textContent = audioReady ? "Audio bereit" : "Audio gesperrt";
-  }catch(e){}
-}
-// sofort beim ersten Pointer-Tap freischalten
-document.addEventListener("pointerdown", function once(){
-  ensureAudio();
-  try{ sfxNext.play().then(()=>{sfxNext.pause(); sfxNext.currentTime=0;}).catch(()=>{});}catch{}
-  try{ sfxPrev.play().then(()=>{sfxPrev.pause(); sfxPrev.currentTime=0;}).catch(()=>{});}catch{}
-  document.removeEventListener("pointerdown", once);
-},{passive:true});
-
-// WebAudio-Pad (Layer über HTMLAudio, lauter & breiter)
-function playWebAudioPad(dir="next"){
-  if(!audioReady) return;
-  const ctx=audioCtx, now=ctx.currentTime, dur=0.75;
-  const notes = dir==="prev" ? [392.00, 466.16, 587.33] : [440.00, 523.25, 659.25];
-
-  const master = ctx.createGain(); master.gain.setValueAtTime(0.0001, now);
-  master.gain.exponentialRampToValueAtTime(0.36, now+0.02);
-  master.gain.exponentialRampToValueAtTime(0.0001, now+dur);
-  master.connect(ctx.destination);
-
-  // mildes Delay + Lowpass im Feedback
-  const delay = ctx.createDelay(1.0); delay.delayTime.value = 0.23;
-  const lp    = ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value = 2400;
-  const fb    = ctx.createGain(); fb.gain.value = 0.32;
-  delay.connect(lp); lp.connect(fb); fb.connect(delay);
-  delay.connect(master);
-
-  notes.forEach((f,i)=>{
-    const o1=ctx.createOscillator(), o2=ctx.createOscillator();
-    const g =ctx.createGain(), p =ctx.createStereoPanner(), fl=ctx.createBiquadFilter();
-    o1.type="sine"; o2.type="triangle";
-    o1.frequency.setValueAtTime(f, now);
-    o2.frequency.setValueAtTime(f, now);
-    o2.detune.setValueAtTime((i-1)*8, now); // Detune
-    // Vibrato
-    const lfo=ctx.createOscillator(), lfoG=ctx.createGain();
-    lfo.frequency.value=5.0; lfoG.gain.value=3.5;
-    lfo.connect(lfoG); lfoG.connect(o1.frequency);
-
-    fl.type="lowpass"; fl.frequency.setValueAtTime(4800-(i*800), now);
-    g.gain.value=0.36 - i*0.06;
-    p.pan.value=(i-1)*0.4;
-
-    o1.connect(g); o2.connect(g); g.connect(fl); fl.connect(delay);
-    o1.start(now); o2.start(now); lfo.start(now);
-    o1.stop(now+dur+0.05); o2.stop(now+dur+0.05); lfo.stop(now+dur+0.05);
-  });
-}
-
-// Gemeinsamer Trigger: HTMLAudio (sicher) + WebAudio (reich)
-function playFX(dir="next"){
-  // zuerst HTMLAudio (sofort & iOS-sicher), dann WebAudio-Layer
-  try{
-    const el = (dir==="prev") ? sfxPrev : sfxNext;
-    el.currentTime = 0; el.volume = 1.0; el.play().catch(()=>{});
-  }catch{}
-  playWebAudioPad(dir);
-}
-
-/* ---------- Visuelle FX ---------- */
-function pulseFX(){
-  // Aperture-Flash
-  fxEl.classList.remove("show"); void fxEl.offsetWidth; fxEl.classList.add("show");
-  // Terminal-Schock
-  terminalEl.classList.add("shock");
-  setTimeout(()=>terminalEl.classList.remove("shock"), 240);
-}
 
 /* ---------- Navigation ---------- */
-function nextChapter(){
+function renderAndSave(){ render(); }
+function nextChapter(manual=false){
   if(isTyping){ if(typingTimer) clearTimeout(typingTimer); textEl.textContent=chapters[index]; isTyping=false; textEl.classList.remove("caret"); return; }
-  ensureAudio(); playFX("next"); pulseFX();
-  index=(index+1)%total; render();
+  index=(index+1)%total;
+  if(!manual){ playSound(); pulseFX(); } // Sound & starker Effekt NUR beim Shake
+  renderAndSave();
 }
 function prevChapter(){
   if(isTyping){ if(typingTimer) clearTimeout(typingTimer); textEl.textContent=chapters[index]; isTyping=false; textEl.classList.remove("caret"); return; }
-  ensureAudio(); playFX("prev"); pulseFX();
-  index=(index-1+total)%total; render();
+  index=(index-1+total)%total; renderAndSave(); // kein Sound/Effekt bei manuell zurück
 }
-function resetStory(){ ensureAudio(); playFX("next"); pulseFX(); index=0; render(); }
+function resetStory(){ index=0; renderAndSave(); }
 
-document.querySelector("main").addEventListener("click", nextChapter);
-nextBtn.addEventListener("click", nextChapter);
-prevBtn.addEventListener("click", prevChapter);
-resetBtn.addEventListener("click", resetStory);
-soundBtn.addEventListener("click", ensureAudio);
+// Tap/Buttons blättern ohne Sound (du wolltest Sound nur beim Shake)
+document.querySelector("main").addEventListener("click", ()=>nextChapter(true));
+document.getElementById("nextBtn").addEventListener("click", ()=>nextChapter(true));
+document.getElementById("prevBtn").addEventListener("click", prevChapter);
+document.getElementById("resetBtn").addEventListener("click", resetStory);
 window.addEventListener("keydown", e=>{
-  if(e.key==="ArrowRight"||e.key===" ") nextChapter();
+  if(e.key==="ArrowRight"||e.key===" ") nextChapter(true);
   if(e.key==="ArrowLeft") prevChapter();
   if(e.key.toLowerCase()==="r") resetStory();
 });
@@ -325,14 +271,14 @@ let lastShake=0; const SHAKE_THRESHOLD=18, SHAKE_COOLDOWN=900; let motionActive=
 function handleMotion(ev){
   const a=ev.accelerationIncludingGravity||ev.acceleration; if(!a) return;
   const m=Math.sqrt((a.x||0)**2+(a.y||0)**2+(a.z||0)**2), now=Date.now();
-  if(m>SHAKE_THRESHOLD && (now-lastShake)>SHAKE_COOLDOWN){ lastShake=now; nextChapter(); }
+  if(m>SHAKE_THRESHOLD && (now-lastShake)>SHAKE_COOLDOWN){
+    lastShake=now; nextChapter(false); // Sound & starker Effekt hier
+  }
 }
 function attachSensors(){ if(motionActive) return; window.addEventListener("devicemotion",handleMotion,{passive:true}); motionActive=true; hintEl.textContent="Schütteln aktiv – oder tippen"; }
 function iOSNeedsPermission(){ return typeof DeviceMotionEvent!=="undefined" && typeof DeviceMotionEvent.requestPermission==="function"; }
-// Permission-Call ohne await, direkt in der Geste (+ Audio-Prime)
 function requestMotionPermission(){
-  ensureAudio();
-  try{ sfxNext.play().then(()=>{sfxNext.pause(); sfxNext.currentTime=0;}).catch(()=>{});}catch{}
+  primeAudio(); // in derselben Geste
   if(iOSNeedsPermission()){
     DeviceMotionEvent.requestPermission().then(state=>{
       if(state==="granted"){ attachSensors(); motionOverlay.classList.remove("show"); permStatus.textContent="Erlaubt ✔︎"; }
@@ -340,12 +286,17 @@ function requestMotionPermission(){
     }).catch(err=>{ permStatus.textContent="Fehler: "+err; });
   } else { attachSensors(); motionOverlay.classList.remove("show"); permStatus.textContent="Aktiv ✔︎"; }
 }
-document.getElementById("enableMotionBtn").addEventListener("click", requestMotionPermission, {passive:true});
-document.getElementById("enableMotionBtn").addEventListener("touchend", requestMotionPermission, {passive:true});
+enableBtn.addEventListener("click", requestMotionPermission, {passive:true});
+enableBtn.addEventListener("touchend", requestMotionPermission, {passive:true});
 
 /* ---------- Init ---------- */
 function renderInit(){ try{ render(); }catch(e){ diagEl.textContent="Render-Fehler: "+e; } }
-window.addEventListener("load", ()=>{ renderInit(); if(iOSNeedsPermission()) motionOverlay.classList.add("show"); else attachSensors(); });
+window.addEventListener("load", ()=>{
+  renderInit();
+  // Audio minimal primen (sicherheitshalber) – echter Unlock erst per User-Geste
+  try{ sfx.load(); }catch{}
+  if(iOSNeedsPermission()) motionOverlay.classList.add("show"); else attachSensors();
+});
 </script>
 </body>
 </html>
