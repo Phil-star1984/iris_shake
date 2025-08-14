@@ -118,22 +118,52 @@
 
 /* ---------- Story (kohärent & IRIS-konform) ---------- */
 const chapters = [
-  "U-Bahn, Neon. Phil Splash skizziert die Frau gegenüber – ruhig, unerreichbar. Niemand sieht hin; alle starren auf Hologramme. In ihm wächst die Entscheidung: Wenn die Welt nur noch auf Screens reagiert, muss Kunst sie dort berühren.",
-  "Regen, Reklamen, spiegelndes Glas. Seine Farben wirken stumpf. Phil erinnert sich an Nächte, in denen echte Menschen vor echten Bildern standen. Er will Kunst und Code koppeln – nicht um zu fliehen, sondern um die Stadt wieder fühlbar zu machen.",
-  "Co-Working-Keller. Lana – präzise, schweigsam – blättert in seinen Skizzen. Neben Lötstationen: ein eingeritztes Symbol, uralt. „BEFORE THE STARS.“ Lana sagt nichts. „Bauen wir’s“, sagt sie dann.",
-  "IRIS entsteht: eine leichte Krone, die Muster im Gehirn in Bilder gießt. „Wie ein drittes Auge.“ Test-Log: ›it remembers‹ – eingetragen von niemandem. Phil friert kurz, arbeitet weiter.",
-  "Selbsttest. Synästhesie: Töne schmecken nach Minze, Blau riecht nach Ozon. Zwischen den Farben schimmert ein Schatten – alt, geduldig, neugierig. Phil blinzelt ihn weg. IRIS funktioniert. Vielleicht zu gut.",
-  "Erste Sessions. Ein stotternder Rapper flutet den Raum mit flüssigem Flow. Eine gelähmte Malerin bewegt sich im VR-Körper. Hoffnung. Parallel warnt RATT: „IRIS trägt vorzeitliche Muster. Es ist nicht nur euer Code.“",
-  "Vorn – der unsichtbare Milliardär – bietet Labs und Geld, fordert Exklusivität. Lana bleibt kühl: „Nur live – vor allen.“ Phil nickt. Als sie gehen, wirkt das eingeritzte Symbol an der Tür … frischer.",
-  "Generalprobe mit Nora, Lanas Vertrauter. „Du denkst, ich zeichne“, flüstert Phil. Nora lächelt, setzt die Krone auf. Das Bild wächst wie ein Tor. In der Tiefe lungert etwas, das keinen Namen hat – und sie anschaut.",
-  "Bühne. Weltstream. Nora malt mit Licht; das Publikum erstarrt. Dann dreht sie sich zu Phil und spricht in einer zeitlosen Sprache: „Es hat dich gefunden.“ Ihr Körper knickt ein; der Stream reißt ab.",
-  "Sirenen. Auf der Leinwand flackern Sternkarten, die niemals existierten. In Phils Kopfhörer murmelt eine Kindheit, die er nie hatte. Lana zieht ihn weg. „Kein Unfall“, sagt sie. „Etwas hat durch IRIS geantwortet.“",
-  "RATT leakt Daten: Schleifen kurz vor Noras Kollaps, als hätte IRIS etwas durchgelassen. Dokumente zeigen Vorns Firma mit Fragmenten eines Signals – datiert „vor dem ersten Stern“. Dazwischen Code von Phil – signiert in einer Zukunft, die nicht passiert ist.",
-  "Allein im Studio. Der Spiegel spricht zuerst: „Du hast IRIS gemacht? IRIS hat dich rekonstruiert.“ Phil begreift, warum er die Frau immer wieder zeichnet: Sie ist das Echo seiner Entscheidung, hierher zurückzukehren.",
-  "IRIS ohne Sicherungen. Sturz nach innen: U-Bahn-Bilder in endlosen Rahmen. Am Ende ein Raum aus Licht. Die Frau steht dort – nicht ganz Mensch. „Du kommst immer hierher, wenn die Schleife brennt.“",
-  "Die Wahrheit ist ein Knoten: IRIS ist ein Schlüssel. Dahinter liegt etwas Älteres als Zeit; Vorn will es einfassen, RATT es begrenzen. „Wähl diesmal anders“, sagt die Frau. „Sonst wiederholt sich alles – nur schöner.“",
-  "U-Bahn, Neon – wieder Anfang. Die Frau gegenüber. In ihrem Auge glimmt eine dünne IRIS-Kontur. „Noch einmal?“, fragt sie. Phil nickt: „Noch einmal – aber nicht im Dunkeln.“ Draußen wird es minimal heller."
+  // 1
+  "Neon zieht an den Fenstern vorbei. Phil zeichnet die Frau ihm gegenüber, während die Anzeige kurz kein Ziel, sondern ein fremdes Zeichen zeigt. Es fühlt sich an wie eine Erinnerung, die nie passiert ist. Als er hochsieht, ist ihr Platz leer und ein Flüstern bleibt: „Wir waren schon hier, Maler.“",
+
+  // 2
+  "Draußen legt der Regen einen Glasfilm über die Stadt. Reklamen brennen, doch seine Farben wirken plötzlich stumpf, als wäre etwas zwischen ihm und der Welt. Er begreift, dass Kunst die Bildschirme nicht bekämpfen muss—sie muss dort atmen. In ihm wächst der Entschluss, Malerei mit Code zu verbinden.",
+
+  // 3
+  "Hinter einer Servicetür liegt Lanas Atelier: Leinwände zwischen Serverracks, der Geruch von Staub und Lötzinn. Über einer verblichenen Wandritzung steht: BEFORE THE STARS. Lana blättert durch Phils Skizzen, sieht ihn lange an und sagt dann ruhig: „Bauen wir etwas, das mit dir malt.“",
+
+  // 4
+  "Sie nennen es IRIS, eine leichte Krone, die Muster im Gehirn in Bilder gießt. Beim ersten Lauf erscheint im Log eine Zeile, die niemand geschrieben hat: It remembers. Phil lacht unsicher, doch in seinem Brustkorb fühlt sich etwas an, als sei es gerade heimgekehrt.",
+
+  // 5
+  "Als die Krone seine Schläfen berührt, verschiebt sich die Wahrnehmung. Töne werden kühl wie Minze, Blau riecht nach Ozon, und eine Stimme sagt, als hätte sie immer da gewartet: „Welcome back.“ Auf dem Bildschirm flackert kurz der violette See aus seinem Kindheitstraum.",
+
+  // 6
+  "Die ersten Sitzungen berühren alle: Ein Rapper findet seinen Fluss, eine Malerin bewegt im VR-Körper wieder eine Hand. Hoffnung hängt in der Luft. Gleichzeitig schickt RATT Logausschnitte und warnt, in IRIS stecke ein Muster, das nicht von Menschen sei—alt wie Staub, der vor allem anderen da war.",
+
+  // 7
+  "Elias Vorn taucht auf, freundlich und kalkulierend. „Deine Arbeit ist eine Karte, Phil, aber du kennst das Land noch nicht.“ Er bietet Geld und Labore, will Exklusivität; Lana bleibt kühl: „Nur live, vor allen.“ Beim Hinausgehen sieht Phil die eingeritzte Gravur an der Tür—frischer als am Morgen.",
+
+  // 8
+  "Generalprobe. Nora setzt die Krone auf, Phil sagt ihr, sie solle nur atmen, er „denkt mit“. Das Bild wächst, als würde Raum selbst zu Stoff. Hinter den Farben öffnet sich etwas, kein Tunnel, eher ein Blick zurück—als wäre dort Geduld.",
+
+  // 9
+  "Bühne, weltweiter Stream. Nora malt Licht in die Luft, die Zuschauer halten den Atem an. Dann wendet sie sich Phil zu und spricht in einer Sprache, die man eher erinnert als versteht: „Es hat dich gefunden.“ Sie knickt ein, und das Signal bricht ab.",
+
+  // 10
+  "Sirenen, überblendetes Weiß. Auf der Leinwand zucken Sternkarten, die niemand kennt, und Phils Ohr glaubt, eine Kindheit zu hören, die nicht ihm gehört. Lana zieht ihn aus dem Schein. „Das war kein Fehler“, sagt sie leise. „Jemand hat geantwortet.“",
+
+  // 11
+  "RATT veröffentlicht Schleifen im Code, die kurz vor Noras Kollaps anstiegen—als hätte IRIS etwas durchgelassen. In Vorns Papieren taucht ein Signal auf, datiert „vor dem ersten Stern“. Zwischen den Seiten liegen Codezeilen, die aussehen wie Phils, nur aus einer Zukunft, die noch nicht passiert ist.",
+
+  // 12
+  "Später sitzt Phil allein im Studio. Der Spiegel hält seinen Blick zu lang, bis es klingt wie ein Gedanke von außen: „Du hast IRIS gemacht? Oder hat IRIS dich wieder zusammengesetzt?“ Er versteht, warum er die Frau immer wieder zeichnet: Sie ist das Echo einer Entscheidung, die er noch treffen muss.",
+
+  // 13
+  "Er startet IRIS ohne Sicherungen. Bilder fügen sich zu einem Tunnel aus U-Bahn-Fenstern, jeder Rahmen eine Abzweigung. Am Ende steht die Frau aus dem Zug, nicht ganz Mensch, doch vertraut. „Du kommst immer hierher, wenn die Schleife brennt“, sagt sie, und etwas in ihm nickt, bevor er es merkt.",
+
+  // 14
+  "Die Einsicht fällt nicht als Satz, sondern als Knoten: IRIS ist kein Haus, sondern ein Schlüssel. Dahinter liegt etwas, das älter ist als Zeit und trotzdem neugierig—eine Macht, die keine Bitrate kennt. Vorn will es fassen, RATT will es dämpfen. Phil spürt, dass beides die falsche Bewegung ist.",
+
+  // 15
+  "Wieder U-Bahn, wieder Neon, doch die Luft wirkt einen Ton heller. Die Frau sitzt ihm gegenüber, im Auge ein hauchfeines Glimmen, als trüge sie IRIS selbst. „Noch einmal?“, fragt sie. „Noch einmal“, sagt Phil, „aber nicht im Dunkeln.“ Und irgendwo setzt eine Hand den ersten Strich."
 ];
+
 const total = chapters.length;
 let index = +(localStorage.getItem("iris:index")||0) || 0;
 
@@ -182,20 +212,22 @@ function pulseFX(){
   terminalEl.classList.remove("quake"); void terminalEl.offsetWidth; terminalEl.classList.add("quake");
 }
 
-/* ---------- LAUTER futuristischer Sound (iOS-stabil, 1 Datei) ---------- */
-const sfx = new Audio(); sfx.setAttribute("playsinline","");
-sfx.volume = 1.0; // laut
-sfx.src = makeFuturisticWav(); // generierter WAV-Data-URI
+/* ---------- Sound (simpel & iOS-sicher) ---------- */
+const SFX_URL = "stab-f-01-brvhrtz-224599.mp3";
 
-// iOS: Audio bei erster Berührung & beim Erlauben-Button „primen“
+const sfx = new Audio();
+sfx.setAttribute("playsinline","");  // wichtig für iOS
+sfx.volume = 1.0;                    // ggf. 0.6–1.0 anpassen
+sfx.src = SFX_URL || makeFuturisticWav(); // Datei bevorzugt; sonst Fallback
+
+// iOS: Audio bei erster Berührung primen (sonst spielt es nicht)
 document.addEventListener("pointerdown", function once(){
-  primeAudio(); document.removeEventListener("pointerdown", once);
+  try { sfx.play().then(()=>{ sfx.pause(); sfx.currentTime=0; }).catch(()=>{}); } catch {}
+  document.removeEventListener("pointerdown", once);
 },{passive:true});
-function primeAudio(){
-  try{ sfx.play().then(()=>{ sfx.pause(); sfx.currentTime=0; }).catch(()=>{});}catch{}
-}
+
 function playSound(){
-  try{ sfx.currentTime = 0; sfx.volume = 1.0; sfx.play().catch(()=>{}); }catch{}
+  try { sfx.currentTime = 0; sfx.play().catch(()=>{}); } catch {}
 }
 
 // Synthese: spherischer, moderner Pad/Whoosh-Hybrid (~0.9s), clean & harmonisch
